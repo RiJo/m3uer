@@ -3,12 +3,8 @@
 /*
 
 TODO:
-    * Images for hidden/visible
-    * Javascript updating images for hidden/visible
     * Smart way of collapsing certain directories
-    * Fix HTML header: encoding for instance
-
-
+    * icons depending on filetype
 
 */
 
@@ -19,7 +15,7 @@ require_once('Tree.php');
 //~ define('DIRECTORY_SEPARATOR',   '/');
 define('ROOT_DIRECTORY',        '/multimedia');
 define('PLAYLISTS_DIRECTORY',   '/tmp');
-define('SESSION_TREE_KEY',      'olokk');
+define('SESSION_TREE_KEY',      'ollojkkkkjk');
 
 
 
@@ -27,7 +23,7 @@ define('SESSION_TREE_KEY',      'olokk');
 function echo_header() {
     echo "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'\n'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>";
     echo "\n<html><head>";
-    echo "\n<title>foobar</title>";
+    echo "\n<title>m3uer</title>";
     echo "<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />";
     echo "<meta http-equiv='Content-Language' content='en' />";
     echo "\n<script type='text/javascript'>";
@@ -53,7 +49,8 @@ function load_tree($playlist = null, $reload_session = false) {
     // load filestructure (may be cached in a session)
     $tree = null;
     if (!isset($_SESSION[SESSION_TREE_KEY]) || $reload_session) {
-        $tree = new Tree();
+        $tree = new Node();
+        $tree->value = DIRECTORY_SEPARATOR;
         load_filesystem($tree, ROOT_DIRECTORY);
         $_SESSION[SESSION_TREE_KEY] = serialize($tree);
     }
@@ -71,7 +68,7 @@ function load_filesystem(&$tree, $path) {
     $skip_directories = array('.', '..');
     $extensions = array('mp3'); 
 
-    $folders = explode(DIRECTORY_SEPARATOR, $path);
+    $folders = array_diff(explode(DIRECTORY_SEPARATOR, $path), array(''));
 
     $value = pathinfo($path);
     $value['path'] = $path;
@@ -110,17 +107,18 @@ function callback_before($node, $level) {
     if ($node->is_leaf()) {
         // file
         echo "\n".str_repeat('    ', $level)."<div class='file'>";
+        echo "\n".str_repeat('    ', $level)."    <img src='./empty.png'>";
         echo "\n".str_repeat('    ', $level)."    <input type='checkbox' id='check:".$node->value['path']."'>";
         echo "\n".str_repeat('    ', $level)."    <label for='check:".$node->value['path']."'>File: ".$node->value['basename']."</label>";
         echo "\n".str_repeat('    ', $level)."</div>";
     }
     else {
         // directory
-        echo "\n".str_repeat('    ', $level)."<div class='directory' style=''>";
+        echo "\n".str_repeat('    ', $level)."<div class='directory'>";
         echo "\n".str_repeat('    ', $level)."    <img src='./plus.png' id='image:".$node->value['path']."' onClick=\"javascript:toggle('".$node->value['path']."')\">";
         echo "\n".str_repeat('    ', $level)."    <input type='checkbox' id='check:".$node->value['path']."'>";
         echo "\n".str_repeat('    ', $level)."    <label for='check:".$node->value['path']."'>Directory: ".$node->value['basename']."</label>";
-        echo "\n".str_repeat('    ', $level)."    <div class='contents' id='wrapper:".$node->value['path']."' style='margin-left:".$indentation."px; ".(($level>3)?'display:none;':'')."'>";
+        echo "\n".str_repeat('    ', $level)."    <div class='contents' id='wrapper:".$node->value['path']."' style='margin-left:".$indentation."px; display:none;'>";
     }
 }
 
@@ -141,7 +139,7 @@ $tree = load_tree('/tmp/playlist.m3u');
 
 echo_header();
 echo "<form>";
-$tree->iterate('callback_before', 'callback_after');
+$tree->iterate('callback_before', 'callback_after', 1);
 echo "<input type='submit'>";
 echo "<form>";
 echo_footer();

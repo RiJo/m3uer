@@ -1,21 +1,5 @@
 <?php
 
-class Tree {
-    private $head;
-
-    function __construct() {
-        $this->head = new Node();
-    }
-
-    function insert($keys, $value = null) {
-        $this->head->insert($keys, $value);
-    }
-
-    function iterate($callback_before, $callback_after) {
-        $this->head->iterate($callback_before, $callback_after, 1);
-    }
-}
-
 class Node {
     public $value;
     private $childs;
