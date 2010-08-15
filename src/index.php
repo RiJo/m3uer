@@ -1,5 +1,17 @@
 <?php
 
+/*
+
+TODO:
+    * Images for hidden/visible
+    * Javascript updating images for hidden/visible
+    * Smart way of collapsing certain directories
+    * Fix HTML header: encoding for instance
+
+
+
+*/
+
 session_start();
 
 require_once('Tree.php');
@@ -15,9 +27,11 @@ define('SESSION_TREE_KEY',      'test');
 function echo_header() {
     echo "\n<html><head><title>foobar</title>";
     echo "\n<script type='text/javascript'>";
-    echo "\nfunction toggle(obj) {
-	var el = document.getElementById(obj);
-	el.style.display = (el.style.display != 'none' ? 'none' : '' );
+    echo "\nfunction toggle(id) {
+    var wrapper = document.getElementById('wrapper:'+id);
+    var image = document.getElementById('image:'+id);
+    wrapper.style.display = (wrapper.style.display != 'none' ? 'none' : '' );
+    image.src = (wrapper.style.display == 'none' ? './plus.png' : './minus.png');
 }";
     echo "\n</script>";
     echo "\n</head><body>";
@@ -92,17 +106,17 @@ function callback_before($node, $level) {
     if ($node->is_leaf()) {
         // file
         echo "\n".str_repeat('    ', $level)."<div class='file'>";
-        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' id='".$node->value['path']."'>";
-        echo "\n".str_repeat('    ', $level)."    <label for='".$node->value['path']."'>File: ".$node->value['basename']."</label>";
+        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' id='check:".$node->value['path']."'>";
+        echo "\n".str_repeat('    ', $level)."    <label for='check:".$node->value['path']."'>File: ".$node->value['basename']."</label>";
         echo "\n".str_repeat('    ', $level)."</div>";
     }
     else {
         // directory
         echo "\n".str_repeat('    ', $level)."<div class='directory' style=''>";
-        echo "\n".str_repeat('    ', $level)."    <img src='' onClick=\"javascript:toggle('contents:".$node->value['path']."')\">";
-        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' id='".$node->value['path']."'>";
-        echo "\n".str_repeat('    ', $level)."    <label for='".$node->value['path']."'>Directory: ".$node->value['basename']."</label>";
-        echo "\n".str_repeat('    ', $level)."    <div class='contents'  id='contents:".$node->value['path']."' style='margin-left:".$indentation."px; ".(($level>30)?'display:none;':'')."'>";
+        echo "\n".str_repeat('    ', $level)."    <img src='./plus.png' id='image:".$node->value['path']."' onClick=\"javascript:toggle('".$node->value['path']."')\">";
+        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' id='check:".$node->value['path']."'>";
+        echo "\n".str_repeat('    ', $level)."    <label for='check:".$node->value['path']."'>Directory: ".$node->value['basename']."</label>";
+        echo "\n".str_repeat('    ', $level)."    <div class='contents' id='wrapper:".$node->value['path']."' style='margin-left:".$indentation."px; ".(($level>3)?'display:none;':'')."'>";
     }
 }
 
