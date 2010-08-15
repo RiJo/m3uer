@@ -19,13 +19,17 @@ require_once('Tree.php');
 //~ define('DIRECTORY_SEPARATOR',   '/');
 define('ROOT_DIRECTORY',        '/multimedia');
 define('PLAYLISTS_DIRECTORY',   '/tmp');
-define('SESSION_TREE_KEY',      'test');
+define('SESSION_TREE_KEY',      'olokk');
 
 
 
 
 function echo_header() {
-    echo "\n<html><head><title>foobar</title>";
+    echo "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'\n'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>";
+    echo "\n<html><head>";
+    echo "\n<title>foobar</title>";
+    echo "<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />";
+    echo "<meta http-equiv='Content-Language' content='en' />";
     echo "\n<script type='text/javascript'>";
     echo "\nfunction toggle(id) {
     var wrapper = document.getElementById('wrapper:'+id);
