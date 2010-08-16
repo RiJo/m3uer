@@ -9,20 +9,20 @@ class Node {
         $this->childs = array();
     }
 
-    function insert($keys, $value = null) {
-        assert(is_array($keys));
+    function insert($path, $key, $value) {
+        assert(is_array($path));
 
-        if (empty($keys)) {
+        if (empty($path)) {
             // Found leaf
-            $this->value = $value;
+            $this->value[$key] = $value;
             return true;
         }
         else {
             // Recurse down in tree
-            $key = array_shift($keys);
-            if (!isset($this->childs[$key]))
-                $this->childs[$key] = new Node();
-            return $this->childs[$key]->insert($keys, $value);
+            $child = array_shift($path);
+            if (!isset($this->childs[$child]))
+                $this->childs[$child] = new Node();
+            return $this->childs[$child]->insert($path, $key, $value);
         }
     }
 
@@ -32,6 +32,13 @@ class Node {
             $child->iterate($callback_before, $callback_after, $level + 1);
         }
         $callback_after($this, $level);
+    }
+
+    function evaluate($key, $value) {
+        $result = (isset($this->value[$key]) && $this->value[$key] == $value);
+        foreach ($this->childs as $child)
+            $result &= $child->evaluate($key, $value);
+        return $result;
     }
 
     function is_leaf() {

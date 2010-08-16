@@ -15,7 +15,7 @@ require_once('Tree.php');
 //~ define('DIRECTORY_SEPARATOR',   '/');
 define('ROOT_DIRECTORY',        '/multimedia');
 define('PLAYLISTS_DIRECTORY',   '/tmp');
-define('SESSION_TREE_KEY',      'ollojkkkkjk');
+define('SESSION_TREE_KEY',      'olljkkjk');
 
 
 
@@ -39,6 +39,13 @@ function echo_header() {
 
 function echo_footer() {
     echo "\n</body></html>";
+}
+
+
+
+
+function path_to_array($path) {
+    return array_diff(explode(DIRECTORY_SEPARATOR, $path), array(''));
 }
 
 
@@ -68,11 +75,12 @@ function load_filesystem(&$tree, $path) {
     $skip_directories = array('.', '..');
     $extensions = array('mp3'); 
 
-    $folders = array_diff(explode(DIRECTORY_SEPARATOR, $path), array(''));
+    $folders = path_to_array($path);
 
-    $value = pathinfo($path);
-    $value['path'] = $path;
-    $value['exists'] = array('filesystem');
+    $pathinfo = pathinfo($path);
+    //~ die(print_r($value,true));
+    //~ $value['path'] = $path;
+    //~ $value['exists'] = array('filesystem');
 
     if (is_dir($path)) {
         $directory = opendir($path);
@@ -82,7 +90,13 @@ function load_filesystem(&$tree, $path) {
 
             if (!in_array($file, $skip_directories)) {
                 if (!isset($file_info['extension']) || in_array($file_info['extension'], $extensions)) {
-                    $tree->insert($folders, $value);
+                    $tree->insert($folders, 'path', $path);
+                    $tree->insert($folders, 'dirname', $pathinfo['dirname']);
+                    $tree->insert($folders, 'basename', $pathinfo['basename']);
+                    $tree->insert($folders, 'filename', $pathinfo['filename']);
+                    $tree->insert($folders, 'exists', true);
+                    $tree->insert($folders, 'in_playlist', false);
+
                     load_filesystem($tree, $full_path);
                 }
             }
@@ -90,12 +104,19 @@ function load_filesystem(&$tree, $path) {
         closedir($directory);
     }
     else {
-        $tree->insert($folders, $value);
+                    $tree->insert($folders, 'path', $path);
+                    $tree->insert($folders, 'dirname', $pathinfo['dirname']);
+                    $tree->insert($folders, 'basename', $pathinfo['basename']);
+                    $tree->insert($folders, 'filename', $pathinfo['filename']);
+                    $tree->insert($folders, 'exists', true);
+                    $tree->insert($folders, 'in_playlist', false);
     }
 }
 
 function load_playlist(&$tree, $path) {
-    // stub
+
+    $folders = path_to_array('/multimedia/Nordman/Nordman - I Lågornas Sken.mp3');
+    $tree->insert($folders, 'in_playlist', true);
 }
 
 
@@ -104,11 +125,14 @@ function load_playlist(&$tree, $path) {
 
 function callback_before($node, $level) {
     $indentation = 30;
+
+    $checked = $node->evaluate('in_playlist', true);
+    $checked = ($checked ? 'checked' : '');
     if ($node->is_leaf()) {
         // file
         echo "\n".str_repeat('    ', $level)."<div class='file'>";
         echo "\n".str_repeat('    ', $level)."    <img src='./empty.png'>";
-        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' id='check:".$node->value['path']."'>";
+        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' id='check:".$node->value['path']."' $checked>";
         echo "\n".str_repeat('    ', $level)."    <label for='check:".$node->value['path']."'>File: ".$node->value['basename']."</label>";
         echo "\n".str_repeat('    ', $level)."</div>";
     }
@@ -116,7 +140,7 @@ function callback_before($node, $level) {
         // directory
         echo "\n".str_repeat('    ', $level)."<div class='directory'>";
         echo "\n".str_repeat('    ', $level)."    <img src='./plus.png' id='image:".$node->value['path']."' onClick=\"javascript:toggle('".$node->value['path']."')\">";
-        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' id='check:".$node->value['path']."'>";
+        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' id='check:".$node->value['path']."' $checked>";
         echo "\n".str_repeat('    ', $level)."    <label for='check:".$node->value['path']."'>Directory: ".$node->value['basename']."</label>";
         echo "\n".str_repeat('    ', $level)."    <div class='contents' id='wrapper:".$node->value['path']."' style='margin-left:".$indentation."px; display:none;'>";
     }
@@ -140,7 +164,7 @@ $tree = load_tree('/tmp/playlist.m3u');
 echo_header();
 echo "<form>";
 $tree->iterate('callback_before', 'callback_after', 1);
-echo "<input type='submit'>";
+echo "<input type='submit' value='Generate playlist'>";
 echo "<form>";
 echo_footer();
 
