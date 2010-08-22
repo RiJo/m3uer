@@ -45,8 +45,7 @@ function echo_footer() {
 
 
 function path_to_array($path) {
-    //~ mb_detect_encoding($path, "UTF-8") == "UTF-8" ? : $path = utf8_encode($path);
-    return array_diff(explode(DIRECTORY_SEPARATOR, $path), array(''));
+    return array_diff(explode('/', trim($path)), array(''));
 }
 
 
@@ -105,29 +104,30 @@ function load_filesystem(&$tree, $path) {
         closedir($directory);
     }
     else {
-                    $tree->insert($folders, 'path', $path);
-                    $tree->insert($folders, 'dirname', $pathinfo['dirname']);
-                    $tree->insert($folders, 'basename', $pathinfo['basename']);
-                    $tree->insert($folders, 'filename', $pathinfo['filename']);
-                    $tree->insert($folders, 'exists', true);
-                    $tree->insert($folders, 'in_playlist', false);
+        $tree->insert($folders, 'path', $path);
+        $tree->insert($folders, 'dirname', $pathinfo['dirname']);
+        $tree->insert($folders, 'basename', $pathinfo['basename']);
+        $tree->insert($folders, 'filename', $pathinfo['filename']);
+        $tree->insert($folders, 'exists', true);
+        $tree->insert($folders, 'in_playlist', false);
     }
 }
 
 function load_playlist(&$tree, $path) {
-    $file = fopen($path, 'r');
-    if ($file) {
-        while (!feof($file)) {
-            $buffer = fgets($file, 4096);
-            $buffer = str_replace(chr(10), '', $buffer);
-            $buffer = str_replace(chr(13), '', $buffer);
-            //~ mb_detect_encoding($buffer, "UTF-8") == "UTF-8" ? : $buffer = utf8_encode($buffer);
-            //~ if ($buffer[0] != '#') {
+    $handle = fopen($path, "rb");
+    if ($handle) {
+        $contents = fread($handle, filesize($path));
+        fclose($handle);
+
+        foreach (explode(chr(10), $contents) as $line) {
+            $line = trim($line);
+            if ($line[0] != '#' && strlen($line) > 0) {
+                echo "Path: \"$line\"<br>";
+                //~ echo "<br>Path: \"$line\" == ".print_r(path_to_array($line),true);
                 //~ echo "\n<br>$buffer = ".print_r(path_to_array($buffer),true);
-                $tree->insert(path_to_array($buffer), 'in_playlist', true);
-            //~ }
+                $tree->insert(path_to_array($line), 'in_playlist', true);
+            }
         }
-        fclose($file);
     }
     else {
         die("Error: could not open file '$path' for reading");
