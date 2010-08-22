@@ -15,7 +15,7 @@ require_once('Tree.php');
 //~ define('DIRECTORY_SEPARATOR',   '/');
 define('ROOT_DIRECTORY',        '/multimedia');
 define('PLAYLISTS_DIRECTORY',   '/tmp');
-define('SESSION_TREE_KEY',      'olljkkjk');
+define('SESSION_TREE_KEY',      'olljkkk');
 
 
 
@@ -45,6 +45,7 @@ function echo_footer() {
 
 
 function path_to_array($path) {
+    //~ mb_detect_encoding($path, "UTF-8") == "UTF-8" ? : $path = utf8_encode($path);
     return array_diff(explode(DIRECTORY_SEPARATOR, $path), array(''));
 }
 
@@ -114,9 +115,24 @@ function load_filesystem(&$tree, $path) {
 }
 
 function load_playlist(&$tree, $path) {
-
-    $folders = path_to_array('/multimedia/Nordman/Nordman - I Lågornas Sken.mp3');
-    $tree->insert($folders, 'in_playlist', true);
+    $file = fopen($path, 'r');
+    if ($file) {
+        while (!feof($file)) {
+            $buffer = fgets($file, 4096);
+            $buffer = str_replace(chr(10), '', $buffer);
+            $buffer = str_replace(chr(13), '', $buffer);
+            //~ mb_detect_encoding($buffer, "UTF-8") == "UTF-8" ? : $buffer = utf8_encode($buffer);
+            //~ if ($buffer[0] != '#') {
+                //~ echo "\n<br>$buffer = ".print_r(path_to_array($buffer),true);
+                $tree->insert(path_to_array($buffer), 'in_playlist', true);
+            //~ }
+        }
+        fclose($file);
+    }
+    else {
+        die("Error: could not open file '$path' for reading");
+    }
+    
 }
 
 
@@ -157,7 +173,7 @@ function callback_after($node, $level) {
 
 
 
-$tree = load_tree('/tmp/playlist.m3u');
+$tree = load_tree('./test.m3u');
 
 
 
