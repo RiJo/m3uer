@@ -6,7 +6,6 @@ TODO:
     * Smart way of collapsing certain directories
     * icons depending on filetype
     * Create a list of invalid paths in playlists when loaded (to locate moved files)
-    * Not use index.php in links
     * One path: playlists, then relative paths
 
 */
@@ -17,7 +16,7 @@ require_once('Tree.php');
 
 define('PLAYLISTS_DIRECTORY',   '/multimedia');
 //define('PLAYLISTS_DIRECTORY',   '/share/HDA_DATA/Qmultimedia/Musik/Playlists');
-define('SESSION_TREE_KEY',      'olk');
+define('SESSION_TREE_KEY',      'oljk');
 
 
 
@@ -55,7 +54,7 @@ function echo_playlists() {
         $file_info = pathinfo($full_path);
 
         if (isset($file_info['extension']) && in_array($file_info['extension'], $extensions)) {
-            echo "<br><li><a href='index.php?playlist=$file_info[basename]'>$file_info[filename]</a></li>";
+            echo "<br><li><a href='".basename($_SERVER['PHP_SELF'])."?playlist=$file_info[basename]'>$file_info[filename]</a></li>";
         }
     }
     echo "</ul>";
