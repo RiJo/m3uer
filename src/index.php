@@ -5,6 +5,7 @@
 TODO:
     * Smart way of collapsing certain directories
     * icons depending on filetype
+    * Create a list of invalid paths in playlists when loaded (to locate moved files)
 
 */
 
@@ -122,9 +123,6 @@ function load_playlist(&$tree, $path) {
         foreach (explode(chr(10), $contents) as $line) {
             $line = trim($line);
             if ($line[0] != '#' && strlen($line) > 0) {
-                echo "Path: \"$line\"<br>";
-                //~ echo "<br>Path: \"$line\" == ".print_r(path_to_array($line),true);
-                //~ echo "\n<br>$buffer = ".print_r(path_to_array($buffer),true);
                 $tree->insert(path_to_array($line), 'in_playlist', true);
             }
         }

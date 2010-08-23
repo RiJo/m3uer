@@ -32,16 +32,21 @@ class Node {
 
     function iterate($callback_before, $callback_after, $level) {
         $callback_before($this, $level);
-        foreach ($this->childs as $child) {
+        foreach ($this->childs as $child)
             $child->iterate($callback_before, $callback_after, $level + 1);
-        }
         $callback_after($this, $level);
     }
 
     function evaluate($key, $value) {
-        $result = (isset($this->value[$key]) && $this->value[$key] == $value);
-        foreach ($this->childs as $child)
-            $result &= $child->evaluate($key, $value);
+        if ($this->is_leaf()) {
+            $result = (isset($this->value[$key]) && $this->value[$key] === $value);
+        }
+        else {
+            $result = true;
+            foreach ($this->childs as $child) {
+                $result &= $child->evaluate($key, $value);
+            }
+        }
         return $result;
     }
 
