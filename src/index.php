@@ -43,7 +43,6 @@ function echo_footer() {
 }
 
 function echo_playlists() {
-    $skip_directories = array('.', '..');
     $extensions = array('m3u'); 
 
     echo "Playlists";
@@ -52,10 +51,8 @@ function echo_playlists() {
         $full_path = PLAYLISTS_DIRECTORY.DIRECTORY_SEPARATOR.$file;
         $file_info = pathinfo($full_path);
 
-        if (!in_array($file, $skip_directories)) {
-            if (!isset($file_info['extension']) || in_array($file_info['extension'], $extensions)) {
-                echo "<br> * <a href='index.php?playlist=$full_path'>$full_path</a>";
-            }
+        if (isset($file_info['extension']) && in_array($file_info['extension'], $extensions)) {
+            echo "<br> * <a href='index.php?playlist=$full_path'>$full_path</a>";
         }
     }
     closedir($directory);
