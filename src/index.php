@@ -15,9 +15,9 @@ session_start();
 
 require_once('Tree.php');
 
-define('PLAYLISTS_DIRECTORY',   '.');
+define('PLAYLISTS_DIRECTORY',   '/multimedia');
 //define('PLAYLISTS_DIRECTORY',   '/share/HDA_DATA/Qmultimedia/Musik/Playlists');
-define('SESSION_TREE_KEY',      'olljkkk');
+define('SESSION_TREE_KEY',      'olk');
 
 
 
@@ -55,7 +55,7 @@ function echo_playlists() {
         $file_info = pathinfo($full_path);
 
         if (isset($file_info['extension']) && in_array($file_info['extension'], $extensions)) {
-            echo "<br><li><a href='index.php?playlist=$full_path'>$file_info[filename]</a></li>";
+            echo "<br><li><a href='index.php?playlist=$file_info[basename]'>$file_info[filename]</a></li>";
         }
     }
     echo "</ul>";
@@ -65,7 +65,14 @@ function echo_playlists() {
 
 
 function path_to_array($path) {
-    return array_diff(explode(DIRECTORY_SEPARATOR, trim($path)), array(''));
+    $skip_directories = array('', '.');
+    $array = explode(DIRECTORY_SEPARATOR, trim($path));
+
+    while (($index = array_search('..', $array))) {
+        array_splice($array, $index - 1, 2);
+    }
+
+    return array_diff($array, $skip_directories);
 }
 
 
@@ -78,7 +85,7 @@ function load_tree($playlist = null, $reload_session = false) {
     if (!isset($_SESSION[SESSION_TREE_KEY]) || $reload_session) {
         $tree = new Node();
         $tree->value = DIRECTORY_SEPARATOR;
-        load_filesystem($tree);
+        load_filesystem($tree, PLAYLISTS_DIRECTORY);
         $_SESSION[SESSION_TREE_KEY] = serialize($tree);
     }
     else {
@@ -91,12 +98,10 @@ function load_tree($playlist = null, $reload_session = false) {
     return $tree;
 }
 
-function load_filesystem(&$tree) {
+function load_filesystem(&$tree, $path) {
     $skip_directories = array('.', '..');
     $extensions = array('mp3'); 
 
-
-    $path = PLAYLISTS_DIRECTORY;
     $folders = path_to_array($path);
 
     $pathinfo = pathinfo($path);
@@ -106,6 +111,8 @@ function load_filesystem(&$tree) {
 
     if (is_dir($path)) {
         $directory = opendir($path);
+        if (!$directory)
+            die("Could not open directory \"$path\"");
         while (false !== ($file = readdir($directory))) {
             $full_path = $path.DIRECTORY_SEPARATOR.$file;
             $file_info = pathinfo($full_path);
@@ -144,12 +151,13 @@ function load_playlist(&$tree, $path) {
         $broken = array();
         foreach (explode(chr(10), $contents) as $line) {
             $line = trim($line);
-            if ($line[0] != '#' && strlen($line) > 0) {
-                $folders = path_to_array($line);
+            if (strlen($line) > 0 && $line[0] != '#') {
+                $file = PLAYLISTS_DIRECTORY.DIRECTORY_SEPARATOR.$line;
+                $folders = path_to_array($file);
                 if ($tree->exists($folders))
                     $tree->insert($folders, 'in_playlist', true);
                 else
-                    array_push($broken, $line);
+                    array_push($broken, implode(DIRECTORY_SEPARATOR, $folders));
             }
         }
         echo "<b>Broken paths:</b><br><font color='#cc0000'>".implode('<br>', $broken)."</font>";
