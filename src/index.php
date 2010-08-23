@@ -16,6 +16,7 @@ session_start();
 require_once('Tree.php');
 
 define('PLAYLISTS_DIRECTORY',   '.');
+//define('PLAYLISTS_DIRECTORY',   '/share/HDA_DATA/Qmultimedia/Musik/Playlists');
 define('SESSION_TREE_KEY',      'olljkkk');
 
 
@@ -198,7 +199,7 @@ function callback_after($node, $level) {
 echo_header();
 
 if (isset($_GET['playlist'])) {
-    $playlist = trim($_GET['playlist']);
+    $playlist = PLAYLISTS_DIRECTORY.DIRECTORY_SEPARATOR.$_GET['playlist'];
     if (!file_exists($playlist))
         die("Could not locate playlist \"$playlist\"");
 
