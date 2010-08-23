@@ -9,12 +9,28 @@ class Node {
         $this->childs = array();
     }
 
+    function exists($path) {
+        assert(is_array($path));
+
+        if (empty($path)) {
+            // Found leaf
+            return true;
+        }
+        else {
+            // Recurse down in tree
+            $child = array_shift($path);
+            if (!isset($this->childs[$child])) {
+                return false;
+            }
+            return $this->childs[$child]->exists($path);
+        }
+    }
+
     function insert($path, $key, $value) {
         assert(is_array($path));
 
         if (empty($path)) {
             // Found leaf
-            //~ echo "\ninsert: \"$key\" = \"$value\"<br>";
             $this->value[$key] = $value;
             return true;
         }
@@ -22,10 +38,8 @@ class Node {
             // Recurse down in tree
             $child = array_shift($path);
             if (!isset($this->childs[$child])) {
-                //~ echo "\n (creating node \"$child\", current: ".print_r(array_keys($this->childs),true).") ";
                 $this->childs[$child] = new Node();
             }
-            //~ echo "\n--> \"$child\" ";
             return $this->childs[$child]->insert($path, $key, $value);
         }
     }

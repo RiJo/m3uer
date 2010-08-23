@@ -15,7 +15,7 @@ require_once('Tree.php');
 
 //~ define('DIRECTORY_SEPARATOR',   '/');
 define('ROOT_DIRECTORY',        '/multimedia');
-define('PLAYLISTS_DIRECTORY',   '/tmp');
+define('PLAYLISTS_DIRECTORY',   '.');
 define('SESSION_TREE_KEY',      'olljkkk');
 
 
@@ -42,6 +42,24 @@ function echo_footer() {
     echo "\n</body></html>";
 }
 
+function echo_playlists() {
+    $skip_directories = array('.', '..');
+    $extensions = array('m3u'); 
+
+    echo "Playlists";
+    $directory = opendir(PLAYLISTS_DIRECTORY);
+    while (false !== ($file = readdir($directory))) {
+        $full_path = PLAYLISTS_DIRECTORY.DIRECTORY_SEPARATOR.$file;
+        $file_info = pathinfo($full_path);
+
+        if (!in_array($file, $skip_directories)) {
+            if (!isset($file_info['extension']) || in_array($file_info['extension'], $extensions)) {
+                echo "<br> * <a href='index.php?playlist=$full_path'>$full_path</a>";
+            }
+        }
+    }
+    closedir($directory);
+}
 
 
 
@@ -87,7 +105,7 @@ function load_filesystem(&$tree, $path) {
         $directory = opendir($path);
         while (false !== ($file = readdir($directory))) {
             $full_path = $path.DIRECTORY_SEPARATOR.$file;
-            $file_info = pathinfo($full_path.'/'.$file);
+            $file_info = pathinfo($full_path);
 
             if (!in_array($file, $skip_directories)) {
                 if (!isset($file_info['extension']) || in_array($file_info['extension'], $extensions)) {
@@ -120,12 +138,18 @@ function load_playlist(&$tree, $path) {
         $contents = fread($handle, filesize($path));
         fclose($handle);
 
+        $broken = array();
         foreach (explode(chr(10), $contents) as $line) {
             $line = trim($line);
             if ($line[0] != '#' && strlen($line) > 0) {
-                $tree->insert(path_to_array($line), 'in_playlist', true);
+                $folders = path_to_array($line);
+                if ($tree->exists($folders))
+                    $tree->insert($folders, 'in_playlist', true);
+                else
+                    array_push($broken, $line);
             }
         }
+        echo "<b>Broken paths:</b><br><font color='#cc0000'>".implode('<br>', $broken)."</font>";
     }
     else {
         die("Error: could not open file '$path' for reading");
@@ -169,17 +193,24 @@ function callback_after($node, $level) {
 }
 
 
-
-
-$tree = load_tree('./test.m3u');
-
-
-
 echo_header();
-echo "<form>";
-$tree->iterate('callback_before', 'callback_after', 1);
-echo "<input type='submit' value='Generate playlist'>";
-echo "<form>";
+
+if (isset($_GET['playlist'])) {
+    $playlist = trim($_GET['playlist']);
+    if (!file_exists($playlist))
+        die("Could not locate playlist \"$playlist\"");
+
+    $tree = load_tree($playlist);
+
+    echo "<form>";
+    $tree->iterate('callback_before', 'callback_after', 1);
+    echo "<input type='submit' value='Generate playlist'>";
+    echo "<form>";
+}
+else {
+    echo_playlists();
+}
+
 echo_footer();
 
 ?>
