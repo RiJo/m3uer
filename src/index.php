@@ -156,7 +156,7 @@ function load_playlist(&$tree, $path) {
                 if ($tree->exists($folders))
                     $tree->insert($folders, 'in_playlist', true);
                 else
-                    array_push($broken, implode(DIRECTORY_SEPARATOR, $folders));
+                    array_push($broken, $file);
             }
         }
         echo "<b>Broken paths:</b><br><font color='#cc0000'>".implode('<br>', $broken)."</font>";
