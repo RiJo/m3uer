@@ -6,6 +6,8 @@ TODO:
     * Smart way of collapsing certain directories
     * icons depending on filetype
     * Create a list of invalid paths in playlists when loaded (to locate moved files)
+    * Not use index.php in links
+    * One path: playlists, then relative paths
 
 */
 
@@ -13,8 +15,6 @@ session_start();
 
 require_once('Tree.php');
 
-//~ define('DIRECTORY_SEPARATOR',   '/');
-define('ROOT_DIRECTORY',        '/multimedia');
 define('PLAYLISTS_DIRECTORY',   '.');
 define('SESSION_TREE_KEY',      'olljkkk');
 
@@ -46,22 +46,25 @@ function echo_playlists() {
     $extensions = array('m3u'); 
 
     echo "Playlists";
+    echo "<ul>";
+
     $directory = opendir(PLAYLISTS_DIRECTORY);
     while (false !== ($file = readdir($directory))) {
         $full_path = PLAYLISTS_DIRECTORY.DIRECTORY_SEPARATOR.$file;
         $file_info = pathinfo($full_path);
 
         if (isset($file_info['extension']) && in_array($file_info['extension'], $extensions)) {
-            echo "<br> * <a href='index.php?playlist=$full_path'>$full_path</a>";
+            echo "<br><li><a href='index.php?playlist=$full_path'>$file_info[filename]</a></li>";
         }
     }
+    echo "</ul>";
     closedir($directory);
 }
 
 
 
 function path_to_array($path) {
-    return array_diff(explode('/', trim($path)), array(''));
+    return array_diff(explode(DIRECTORY_SEPARATOR, trim($path)), array(''));
 }
 
 
@@ -74,7 +77,7 @@ function load_tree($playlist = null, $reload_session = false) {
     if (!isset($_SESSION[SESSION_TREE_KEY]) || $reload_session) {
         $tree = new Node();
         $tree->value = DIRECTORY_SEPARATOR;
-        load_filesystem($tree, ROOT_DIRECTORY);
+        load_filesystem($tree);
         $_SESSION[SESSION_TREE_KEY] = serialize($tree);
     }
     else {
@@ -87,10 +90,12 @@ function load_tree($playlist = null, $reload_session = false) {
     return $tree;
 }
 
-function load_filesystem(&$tree, $path) {
+function load_filesystem(&$tree) {
     $skip_directories = array('.', '..');
     $extensions = array('mp3'); 
 
+
+    $path = PLAYLISTS_DIRECTORY;
     $folders = path_to_array($path);
 
     $pathinfo = pathinfo($path);
