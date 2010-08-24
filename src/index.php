@@ -18,8 +18,8 @@ require_once('Tree.php');
 
 define('ROOT_DIRECTORY',   '/multimedia');
 //define('ROOT_DIRECTORY',   '/share/HDA_DATA/Qmultimedia/Musik');
-define('SESSION_KEY_FILES',         'files');
-define('SESSION_KEY_PLAYLISTS',     'playlists');
+define('SESSION_KEY_FILES',         'bar');
+define('SESSION_KEY_PLAYLISTS',     'foo');
 
 
 
@@ -60,6 +60,8 @@ function echo_playlists() {
 
 
 function path_to_array($path) {
+    $path = str_replace(ROOT_DIRECTORY.DIRECTORY_SEPARATOR, '', $path);
+
     $skip_directories = array('', '.');
     $array = explode(DIRECTORY_SEPARATOR, trim($path));
 
@@ -151,6 +153,7 @@ function load_playlist(&$tree, $path) {
             if (strlen($line) > 0 && $line[0] != '#') {
                 $file = $directory.DIRECTORY_SEPARATOR.$line;
                 $folders = path_to_array($file);
+                //~ echo "<br>Loading: ".print_r($folders,true);
                 if ($tree->exists($folders))
                     $tree->insert($folders, 'in_playlist', true);
                 else
