@@ -53,7 +53,7 @@ function echo_playlists() {
     echo "<p><ul>";
     foreach (get_files(ROOT_DIRECTORY, $extensions) as $path=>$info) {
         if (isset($info['extension']) && in_array($info['extension'], $extensions)) {
-            echo "<br><li><a href='".basename($_SERVER['PHP_SELF'])."?playlist=$info[path]'>$info[filename]</a></li>";
+            echo "<li><a href='".basename($_SERVER['PHP_SELF'])."?playlist=$info[path]'>$info[filename]</a></li>";
         }
     }
     echo "</ul></p>";
@@ -164,7 +164,9 @@ function load_playlist(&$tree, $path) {
                     array_push($broken, $file);
             }
         }
-        echo "<b>Broken paths:</b><br><font color='#cc0000'>".implode('<br>', $broken)."</font>";
+        if (count($broken) > 0) {
+            echo "<b>Broken paths:</b><br><ul><li>".implode('</li><li>', $broken)."</li></ul>";
+        }
     }
     else {
         die("Error: could not open file '$path' for reading");
@@ -216,7 +218,7 @@ if (isset($_GET['playlist'])) {
         die("Could not locate playlist \"$playlist\"");
 
     echo "<h1>$playlist</h1>";
-    echo "<p><a href='".basename($_SERVER['PHP_SELF'])."'>Spellistor</a></p>";
+    echo "<p><a href='".basename($_SERVER['PHP_SELF'])."'>Back to playlists</a></p>";
 
     $tree = load_tree($playlist);
 
