@@ -39,6 +39,7 @@ class Node {
             $child = array_shift($path);
             if (!isset($this->childs[$child])) {
                 $this->childs[$child] = new Node();
+                echo "<br>Node \"$child\" created";
             }
             return $this->childs[$child]->insert($path, $key, $value);
         }

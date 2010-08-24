@@ -16,7 +16,7 @@ require_once('Tree.php');
 
 define('PLAYLISTS_DIRECTORY',   '/multimedia');
 //define('PLAYLISTS_DIRECTORY',   '/share/HDA_DATA/Qmultimedia/Musik/Playlists');
-define('SESSION_TREE_KEY',      'oljk');
+define('SESSION_TREE_KEY',      'olkjk');
 
 
 
