@@ -82,7 +82,7 @@ function get_files($path, $extensions) {
 
     $files[$path] = pathinfo($path);
     $files[$path]['path'] = $path;
-    echo "<br>Path: $path: ".print_r($files,true);
+    //~ echo "<br>Path: $path: ".print_r($files,true);
 
     while (false !== ($file = readdir($directory))) {
         $full_path = $path.DIRECTORY_SEPARATOR.$file;
@@ -133,7 +133,6 @@ function load_filesystem(&$tree) {
         $tree->insert($folders, 'basename', $info['basename']);
         $tree->insert($folders, 'filename', $info['filename']);
         $tree->insert($folders, 'exists', true);
-        //~ $tree->insert($folders, 'in_playlist', false);
     }
 }
 
@@ -196,6 +195,7 @@ function callback_before($node, $level) {
 function callback_after($node, $level) {
     if (!$node->is_leaf()) {
         // directory
+        print_r($node->value);
         echo "\n".str_repeat('    ', $level)."    </div>";
         echo "\n".str_repeat('    ', $level)."</div>";
     }
