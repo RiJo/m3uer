@@ -112,7 +112,9 @@ function load_filesystem(&$tree, $path) {
         $directory = opendir($path);
         if (!$directory)
             die("Could not open directory \"$path\"");
+
         while (false !== ($file = readdir($directory))) {
+            echo "<br>Found file \"$file\";
             $full_path = $path.DIRECTORY_SEPARATOR.$file;
             $file_info = pathinfo($full_path);
 
