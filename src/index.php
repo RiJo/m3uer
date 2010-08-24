@@ -16,8 +16,8 @@ session_start();
 require_once('Tree.php');
 
 define('ROOT_DIRECTORY',   '/multimedia');
-//define('PLAYLISTS_DIRECTORY',   '/share/HDA_DATA/Qmultimedia/Musik/Playlists');
-define('SESSION_TREE_KEY',      'filestructure');
+//define('ROOT_DIRECTORY',   '/share/HDA_DATA/Qmultimedia/Musik');
+define('SESSION_TREE_KEY',      'files');
 
 
 
@@ -104,15 +104,15 @@ function get_files($path, $extensions) {
 function load_tree($playlist = null, $reload_session = false) {
     // load filestructure (may be cached in a session)
     $tree = null;
-    //~ if (!isset($_SESSION[SESSION_TREE_KEY]) || $reload_session) {
+    if (!isset($_SESSION[SESSION_TREE_KEY]) || $reload_session) {
         $tree = new Node();
         $tree->value = DIRECTORY_SEPARATOR;
         load_filesystem($tree);
-        //~ $_SESSION[SESSION_TREE_KEY] = serialize($tree);
-    //~ }
-    //~ else {
-        //~ $tree = unserialize($_SESSION[SESSION_TREE_KEY]);
-    //~ }
+        $_SESSION[SESSION_TREE_KEY] = serialize($tree);
+    }
+    else {
+        $tree = unserialize($_SESSION[SESSION_TREE_KEY]);
+    }
     // load playlist
     if ($playlist) {
         load_playlist($tree, $playlist);
