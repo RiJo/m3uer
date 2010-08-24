@@ -79,10 +79,10 @@ function get_files($path, $extensions) {
         die("Could not open directory \"$path\"");
 
     $files = array();
-    
-    echo "<br>Path: $path";
+
     $files[$path] = pathinfo($path);
     $files[$path]['path'] = $path;
+    echo "<br>Path: $path: ".print_r($files,true);
 
     while (false !== ($file = readdir($directory))) {
         $full_path = $path.DIRECTORY_SEPARATOR.$file;
