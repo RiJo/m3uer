@@ -8,6 +8,7 @@ TODO:
     * Create a list of invalid paths in playlists when loaded (to locate moved files)
     * One path: playlists, then relative paths (root directory, find m3u:s recursive)
     * skip empty directories
+    * store files/playlists in session variaable
 
 */
 
@@ -17,7 +18,8 @@ require_once('Tree.php');
 
 define('ROOT_DIRECTORY',   '/multimedia');
 //define('ROOT_DIRECTORY',   '/share/HDA_DATA/Qmultimedia/Musik');
-define('SESSION_TREE_KEY',      'files');
+define('SESSION_KEY_FILES',         'files');
+define('SESSION_KEY_PLAYLISTS',     'playlists');
 
 
 
@@ -78,6 +80,7 @@ function get_files($path, $extensions) {
 
     $files = array();
     
+    echo "<br>Path: $path";
     $files[$path] = pathinfo($path);
     $files[$path]['path'] = $path;
 
@@ -104,14 +107,14 @@ function get_files($path, $extensions) {
 function load_tree($playlist = null, $reload_session = false) {
     // load filestructure (may be cached in a session)
     $tree = null;
-    if (!isset($_SESSION[SESSION_TREE_KEY]) || $reload_session) {
+    if (!isset($_SESSION[SESSION_KEY_FILES]) || $reload_session) {
         $tree = new Node();
         $tree->value = DIRECTORY_SEPARATOR;
         load_filesystem($tree);
-        $_SESSION[SESSION_TREE_KEY] = serialize($tree);
+        $_SESSION[SESSION_KEY_FILES] = serialize($tree);
     }
     else {
-        $tree = unserialize($_SESSION[SESSION_TREE_KEY]);
+        $tree = unserialize($_SESSION[SESSION_KEY_FILES]);
     }
     // load playlist
     if ($playlist) {
