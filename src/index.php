@@ -18,8 +18,8 @@ require_once('Tree.php');
 
 define('ROOT_DIRECTORY',   '/multimedia');
 //define('ROOT_DIRECTORY',   '/share/HDA_DATA/Qmultimedia/Musik');
-define('SESSION_KEY_FILES',         'bar');
-define('SESSION_KEY_PLAYLISTS',     'foo');
+define('SESSION_KEY_FILES',         'f');
+define('SESSION_KEY_PLAYLISTS',     'p');
 
 
 
@@ -129,12 +129,14 @@ function load_filesystem(&$tree) {
     $extensions = array('mp3'); 
 
     foreach (get_files(ROOT_DIRECTORY, $extensions) as $path=>$info) {
-        $folders = path_to_array($path);
-        $tree->insert($folders, 'path', $info['path']);
-        $tree->insert($folders, 'dirname', $info['dirname']);
-        $tree->insert($folders, 'basename', $info['basename']);
-        $tree->insert($folders, 'filename', $info['filename']);
-        $tree->insert($folders, 'exists', true);
+        if (strlen($info['filename']) > 0) {
+            $folders = path_to_array($path);
+            $tree->insert($folders, 'path', $info['path']);
+            $tree->insert($folders, 'dirname', $info['dirname']);
+            $tree->insert($folders, 'basename', $info['basename']);
+            $tree->insert($folders, 'filename', $info['filename']);
+            $tree->insert($folders, 'exists', true);
+        }
     }
 }
 
@@ -198,7 +200,6 @@ function callback_before($node, $level) {
 function callback_after($node, $level) {
     if (!$node->is_leaf()) {
         // directory
-        print_r($node->value);
         echo "\n".str_repeat('    ', $level)."    </div>";
         echo "\n".str_repeat('    ', $level)."</div>";
     }
