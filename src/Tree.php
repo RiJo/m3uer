@@ -28,9 +28,10 @@ class Node {
 
     function insert($path, $key, $value) {
         assert(is_array($path));
-echo "<br>insert($path, $key, $value);";
+
         if (empty($path)) {
             // Found leaf
+            //~ echo "<br><b>$key = $value</b><br>";
             $this->value[$key] = $value;
             return true;
         }
@@ -39,8 +40,8 @@ echo "<br>insert($path, $key, $value);";
             $child = array_shift($path);
             if (!isset($this->childs[$child])) {
                 $this->childs[$child] = new Node();
-                echo "<br>Node \"$child\" created";
             }
+            //~ echo "--> $child ";
             return $this->childs[$child]->insert($path, $key, $value);
         }
     }

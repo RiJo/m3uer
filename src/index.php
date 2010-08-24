@@ -6,7 +6,8 @@ TODO:
     * Smart way of collapsing certain directories
     * icons depending on filetype
     * Create a list of invalid paths in playlists when loaded (to locate moved files)
-    * One path: playlists, then relative paths
+    * One path: playlists, then relative paths (root directory, find m3u:s recursive)
+    * skip empty directories
 
 */
 
@@ -14,9 +15,9 @@ session_start();
 
 require_once('Tree.php');
 
-define('PLAYLISTS_DIRECTORY',   '/multimedia');
+define('ROOT_DIRECTORY',   '/multimedia');
 //define('PLAYLISTS_DIRECTORY',   '/share/HDA_DATA/Qmultimedia/Musik/Playlists');
-define('SESSION_TREE_KEY',      'olkjk');
+define('SESSION_TREE_KEY',      'filestructure');
 
 
 
@@ -43,22 +44,15 @@ function echo_footer() {
 }
 
 function echo_playlists() {
-    $extensions = array('m3u'); 
+    $extensions = array('m3u');
 
-    echo "Playlists";
-    echo "<ul>";
-
-    $directory = opendir(PLAYLISTS_DIRECTORY);
-    while (false !== ($file = readdir($directory))) {
-        $full_path = PLAYLISTS_DIRECTORY.DIRECTORY_SEPARATOR.$file;
-        $file_info = pathinfo($full_path);
-
-        if (isset($file_info['extension']) && in_array($file_info['extension'], $extensions)) {
-            echo "<br><li><a href='".basename($_SERVER['PHP_SELF'])."?playlist=$file_info[basename]'>$file_info[filename]</a></li>";
+    echo "Playlists<ul>";
+    foreach (get_files(ROOT_DIRECTORY, $extensions) as $path=>$info) {
+        if (isset($info['extension']) && in_array($info['extension'], $extensions)) {
+            echo "<br><li><a href='".basename($_SERVER['PHP_SELF'])."?playlist=$info[path]'>$info[filename]</a></li>";
         }
     }
     echo "</ul>";
-    closedir($directory);
 }
 
 
@@ -74,6 +68,35 @@ function path_to_array($path) {
     return array_diff($array, $skip_directories);
 }
 
+function get_files($path, $extensions) {
+    if (!is_dir($path))
+        die("\"$path\" is not a directory");
+
+    $directory = opendir($path);
+    if (!$directory)
+        die("Could not open directory \"$path\"");
+
+    $files = array();
+    
+    $files[$path] = pathinfo($path);
+    $files[$path]['path'] = $path;
+
+    while (false !== ($file = readdir($directory))) {
+        $full_path = $path.DIRECTORY_SEPARATOR.$file;
+        $file_info = pathinfo($full_path);
+        $file_info['path'] = $full_path;
+
+        if (is_dir($full_path) && !in_array($file, array('.', '..'))) {
+            $files = array_merge($files, get_files($full_path, $extensions));
+        }
+        elseif (isset($file_info['extension']) && in_array($file_info['extension'], $extensions)) {
+            $files[$full_path] = $file_info;
+        }
+    }
+    closedir($directory);
+    return $files;
+}
+
 
 
 
@@ -81,15 +104,15 @@ function path_to_array($path) {
 function load_tree($playlist = null, $reload_session = false) {
     // load filestructure (may be cached in a session)
     $tree = null;
-    if (!isset($_SESSION[SESSION_TREE_KEY]) || $reload_session) {
+    //~ if (!isset($_SESSION[SESSION_TREE_KEY]) || $reload_session) {
         $tree = new Node();
         $tree->value = DIRECTORY_SEPARATOR;
-        load_filesystem($tree, PLAYLISTS_DIRECTORY);
-        $_SESSION[SESSION_TREE_KEY] = serialize($tree);
-    }
-    else {
-        $tree = unserialize($_SESSION[SESSION_TREE_KEY]);
-    }
+        load_filesystem($tree);
+        //~ $_SESSION[SESSION_TREE_KEY] = serialize($tree);
+    //~ }
+    //~ else {
+        //~ $tree = unserialize($_SESSION[SESSION_TREE_KEY]);
+    //~ }
     // load playlist
     if ($playlist) {
         load_playlist($tree, $playlist);
@@ -97,49 +120,17 @@ function load_tree($playlist = null, $reload_session = false) {
     return $tree;
 }
 
-function load_filesystem(&$tree, $path) {
-    $skip_directories = array('.', '..');
+function load_filesystem(&$tree) {
     $extensions = array('mp3'); 
 
-    $folders = path_to_array($path);
-
-    $pathinfo = pathinfo($path);
-    //~ die(print_r($value,true));
-    //~ $value['path'] = $path;
-    //~ $value['exists'] = array('filesystem');
-
-    if (is_dir($path)) {
-        $directory = opendir($path);
-        if (!$directory)
-            die("Could not open directory \"$path\"");
-
-        while (false !== ($file = readdir($directory))) {
-            echo "<br>Found file \"$file\"";
-            $full_path = $path.DIRECTORY_SEPARATOR.$file;
-            $file_info = pathinfo($full_path);
-
-            if (!in_array($file, $skip_directories)) {
-                if (!isset($file_info['extension']) || in_array($file_info['extension'], $extensions)) {
-                    $tree->insert($folders, 'path', $path);
-                    $tree->insert($folders, 'dirname', $pathinfo['dirname']);
-                    $tree->insert($folders, 'basename', $pathinfo['basename']);
-                    $tree->insert($folders, 'filename', $pathinfo['filename']);
-                    $tree->insert($folders, 'exists', true);
-                    $tree->insert($folders, 'in_playlist', false);
-
-                    load_filesystem($tree, $full_path);
-                }
-            }
-        }
-        closedir($directory);
-    }
-    else {
-        $tree->insert($folders, 'path', $path);
-        $tree->insert($folders, 'dirname', $pathinfo['dirname']);
-        $tree->insert($folders, 'basename', $pathinfo['basename']);
-        $tree->insert($folders, 'filename', $pathinfo['filename']);
+    foreach (get_files(ROOT_DIRECTORY, $extensions) as $path=>$info) {
+        $folders = path_to_array($path);
+        $tree->insert($folders, 'path', $info['path']);
+        $tree->insert($folders, 'dirname', $info['dirname']);
+        $tree->insert($folders, 'basename', $info['basename']);
+        $tree->insert($folders, 'filename', $info['filename']);
         $tree->insert($folders, 'exists', true);
-        $tree->insert($folders, 'in_playlist', false);
+        //~ $tree->insert($folders, 'in_playlist', false);
     }
 }
 
@@ -148,12 +139,15 @@ function load_playlist(&$tree, $path) {
     if ($handle) {
         $contents = fread($handle, filesize($path));
         fclose($handle);
+        
+        $info = pathinfo($path);
+        $directory = $info['dirname'];
 
         $broken = array();
         foreach (explode(chr(10), $contents) as $line) {
             $line = trim($line);
             if (strlen($line) > 0 && $line[0] != '#') {
-                $file = PLAYLISTS_DIRECTORY.DIRECTORY_SEPARATOR.$line;
+                $file = $directory.DIRECTORY_SEPARATOR.$line;
                 $folders = path_to_array($file);
                 if ($tree->exists($folders))
                     $tree->insert($folders, 'in_playlist', true);
@@ -208,7 +202,7 @@ function callback_after($node, $level) {
 echo_header();
 
 if (isset($_GET['playlist'])) {
-    $playlist = PLAYLISTS_DIRECTORY.DIRECTORY_SEPARATOR.$_GET['playlist'];
+    $playlist = $_GET['playlist'];
     if (!file_exists($playlist))
         die("Could not locate playlist \"$playlist\"");
 
@@ -222,6 +216,9 @@ if (isset($_GET['playlist'])) {
 else {
     echo_playlists();
 }
+
+//~ $files = get_files(ROOT_DIRECTORY, array('m3u'));
+//~ echo "<pre>".print_r($files,true)."</pre>";
 
 echo_footer();
 
