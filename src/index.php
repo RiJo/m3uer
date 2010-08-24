@@ -1,16 +1,12 @@
 <?php
 
 /*
-
-TODO:
+    TODO:
     * Smart way of collapsing certain directories
     * icons depending on filetype
-    * Create a list of invalid paths in playlists when loaded (to locate moved files)
-    * One path: playlists, then relative paths (root directory, find m3u:s recursive)
-    * skip empty directories
     * store files/playlists in session variaable
     * sort according to filenames
-
+    * add stylesheet
 */
 
 session_start();
@@ -187,7 +183,7 @@ function callback_before($node, $level) {
         // file
         echo "\n".str_repeat('    ', $level)."<div class='file'>";
         echo "\n".str_repeat('    ', $level)."    <img src='./empty.png'>";
-        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' id='check:".$node->value['path']."' $checked>";
+        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' name='".$node->value['path']."' id='check:".$node->value['path']."' $checked>";
         echo "\n".str_repeat('    ', $level)."    <label for='check:".$node->value['path']."'>File: ".$node->value['basename']."</label>";
         echo "\n".str_repeat('    ', $level)."</div>";
     }
@@ -195,7 +191,7 @@ function callback_before($node, $level) {
         // directory
         echo "\n".str_repeat('    ', $level)."<div class='directory'>";
         echo "\n".str_repeat('    ', $level)."    <img src='./plus.png' id='image:".$node->value['path']."' onClick=\"javascript:toggle('".$node->value['path']."')\">";
-        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' id='check:".$node->value['path']."' $checked>";
+        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' name='".$node->value['path']."' id='check:".$node->value['path']."' $checked>";
         echo "\n".str_repeat('    ', $level)."    <label for='check:".$node->value['path']."'>Directory: ".$node->value['basename']."</label>";
         echo "\n".str_repeat('    ', $level)."    <div class='contents' id='wrapper:".$node->value['path']."' style='margin-left:".$indentation."px; display:none;'>";
     }
@@ -213,6 +209,12 @@ function callback_after($node, $level) {
 echo_header();
 
 if (isset($_GET['playlist'])) {
+    if (isset($_POST['update'])) {
+        unset($_POST['update']);
+        // filter out folders
+        // dump to playlist file
+        die(print_r($_POST,true)); // temp
+    }
     $playlist = $_GET['playlist'];
     if (!file_exists($playlist))
         die("Could not locate playlist \"$playlist\"");
@@ -222,9 +224,9 @@ if (isset($_GET['playlist'])) {
 
     $tree = load_tree($playlist);
 
-    echo "<form>";
+    echo "<form method='post' action='".basename($_SERVER['PHP_SELF'])."?playlist=$playlist'>";
     $tree->iterate('callback_before', 'callback_after', 1);
-    echo "<input type='submit' value='Generate playlist'>";
+    echo "<input type='submit' name='update' value='Generate playlist'>";
     echo "<form>";
 }
 else {
