@@ -28,7 +28,7 @@ class Node {
 
     function insert($path, $key, $value) {
         assert(is_array($path));
-
+echo "<br>insert($path, $key, $value);";
         if (empty($path)) {
             // Found leaf
             $this->value[$key] = $value;
