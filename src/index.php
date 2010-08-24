@@ -9,6 +9,7 @@ TODO:
     * One path: playlists, then relative paths (root directory, find m3u:s recursive)
     * skip empty directories
     * store files/playlists in session variaable
+    * sort according to filenames
 
 */
 
@@ -48,13 +49,14 @@ function echo_footer() {
 function echo_playlists() {
     $extensions = array('m3u');
 
-    echo "Playlists<ul>";
+    echo "<h1>Playlists</h1>";
+    echo "<p><ul>";
     foreach (get_files(ROOT_DIRECTORY, $extensions) as $path=>$info) {
         if (isset($info['extension']) && in_array($info['extension'], $extensions)) {
             echo "<br><li><a href='".basename($_SERVER['PHP_SELF'])."?playlist=$info[path]'>$info[filename]</a></li>";
         }
     }
-    echo "</ul>";
+    echo "</ul></p>";
 }
 
 
@@ -212,6 +214,9 @@ if (isset($_GET['playlist'])) {
     $playlist = $_GET['playlist'];
     if (!file_exists($playlist))
         die("Could not locate playlist \"$playlist\"");
+
+    echo "<h1>$playlist</h1>";
+    echo "<p><a href='".basename($_SERVER['PHP_SELF'])."'>Spellistor</a></p>";
 
     $tree = load_tree($playlist);
 
