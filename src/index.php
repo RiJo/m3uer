@@ -22,9 +22,9 @@ define('APPLICATION_VERSION',       '0.1.0 unstable');
 
 define('COMMENT_SYMBOL',            '#');
 
-define('SESSION_MUSIC',             '_____music');
-define('SESSION_PLAYLISTS',         '_____playlists');
-define('SESSION_TREE',              '_____tree');
+define('SESSION_MUSIC',             '---music');
+define('SESSION_PLAYLISTS',         '---playlists');
+define('SESSION_TREE',              '---tree');
 
 
 function playlist_header() {
@@ -111,7 +111,7 @@ function relative($root, $path) {
 }
 
 function path_to_array($path) {
-    //~ $path = str_replace(ROOT_DIRECTORY.DIRECTORY_SEPARATOR, './', $path);;
+    //~ $path = str_replace(ROOT_DIRECTORY.DIRECTORY_SEPARATOR, './', $path);
 
     $skip_directories = array('', '.');
     $array = explode(DIRECTORY_SEPARATOR, trim($path));
@@ -191,7 +191,7 @@ function load_filesystem(&$tree, $root, $reload_session = false) {
 
     foreach ($music as $path=>$info) {
         if (strlen($info['filename']) > 0) {
-            $folders = path_to_array($path);
+            $folders = path_to_array(str_replace(ROOT_DIRECTORY.DIRECTORY_SEPARATOR, '', $path));
             $tree->insert($folders, 'path', $info['path']);
             $tree->insert($folders, 'dirname', $info['dirname']);
             $tree->insert($folders, 'basename', $info['basename']);
@@ -218,11 +218,11 @@ function load_playlist(&$tree, $root, $playlist) {
                 }
                 else {
                     $file = $root.DIRECTORY_SEPARATOR.$line;
-                    $folders = path_to_array($file);
+                    $folders = path_to_array(str_replace(ROOT_DIRECTORY.DIRECTORY_SEPARATOR, '', $line));
                     if ($tree->exists($folders))
                         $tree->insert($folders, 'in_playlist', true);
                     else
-                        array_push($broken, $file);
+                        array_push($broken, "\"$file\" => \"".implode(DIRECTORY_SEPARATOR, $folders)."\"");
                 }
             }
         }
