@@ -1,0 +1,35 @@
+
+/*
+ *   GLOBAL
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family:  helvetica,arial,freesans,clean,sans-serif,"new century schoolbook",serif;
+    font-size: 11pt;
+    color: #000000;
+}
+
+body {
+    background-color: #f8f8f8;
+}
+
+/*
+ * CONTAINERS
+ */
+
+div.message {
+    margin: 5px;
+    border: 1px #999999 solid;
+}
+
+div.message#comments {
+    color: #005500;
+    background-color: #aaccaa;
+}
+
+div.message#broken {
+    color: #cc0000;
+    background-color: #ffcccc;
+}
