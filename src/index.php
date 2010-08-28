@@ -93,9 +93,6 @@ function relative($root, $path) {
     $root = path_to_array($root);
     $path = path_to_array($path);
 
-    //~ echo "<br>root: ".print_r($root, true);
-    //~ echo "<br>path: ".print_r($path, true);
-
     $relative = array('.');
     if (count($root) <= count($path)) {
         while (count($root) > 0 && $root[0] == $path[0]) {
@@ -111,8 +108,6 @@ function relative($root, $path) {
 }
 
 function path_to_array($path) {
-    //~ $path = str_replace(ROOT_DIRECTORY.DIRECTORY_SEPARATOR, './', $path);
-
     $skip_directories = array('', '.');
     $array = explode(DIRECTORY_SEPARATOR, trim($path));
 
@@ -218,7 +213,7 @@ function load_playlist(&$tree, $root, $playlist) {
                 }
                 else {
                     $file = $root.DIRECTORY_SEPARATOR.$line;
-                    $folders = path_to_array(str_replace(ROOT_DIRECTORY.DIRECTORY_SEPARATOR, '', $line));
+                    $folders = path_to_array(str_replace(ROOT_DIRECTORY.DIRECTORY_SEPARATOR, '', $file));
                     if ($tree->exists($folders))
                         $tree->insert($folders, 'in_playlist', true);
                     else
@@ -310,13 +305,6 @@ if (isset($_GET['playlist']) && !empty($_GET['playlist'])) {
 else {
     echo_playlists();
 }
-
-/*$temp = pathinfo($playlist);
-$root = $temp['dirname'];
-$playlist = $temp['basename'];
-
-$files = get_files($root, array('m3u'));
-echo "<pre>".print_r($files,true)."</pre>";*/
 
 echo_footer();
 
