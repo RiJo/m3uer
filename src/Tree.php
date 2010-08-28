@@ -31,7 +31,6 @@ class Node {
 
         if (empty($path)) {
             // Found leaf
-            //~ echo "<br><b>$key = $value</b><br>";
             $this->value[$key] = $value;
             return true;
         }
@@ -41,7 +40,6 @@ class Node {
             if (!isset($this->childs[$child])) {
                 $this->childs[$child] = new Node();
             }
-            //~ echo "--> $child ";
             return $this->childs[$child]->insert($path, $key, $value);
         }
     }
