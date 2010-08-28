@@ -111,6 +111,9 @@ function path_to_array($path) {
     $skip_directories = array('', '.');
     $array = explode(DIRECTORY_SEPARATOR, trim($path));
 
+    while (count($array) > 0 && $array[0] == '..')
+        array_shift($array);
+
     while (($index = array_search('..', $array)))
         array_splice($array, $index - 1, 2);
 
@@ -294,7 +297,7 @@ if (isset($_GET['playlist']) && !empty($_GET['playlist'])) {
     echo "<h1>$playlist</h1>";
     echo "<p><a href='".basename($_SERVER['PHP_SELF'])."'>Back to playlists</a></p>";
 
-    $tree = load_tree($playlist, true);
+    $tree = load_tree($playlist);
 
     echo "<form method='post' action='".basename($_SERVER['PHP_SELF'])."?playlist=$playlist'>";
     echo "<input type='hidden' name='playlist' value='$playlist'>";
