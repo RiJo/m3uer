@@ -111,9 +111,11 @@ function path_to_array($path) {
     $skip_directories = array('', '.');
     $array = explode(DIRECTORY_SEPARATOR, trim($path));
 
+    // remove leading '..' items
     while (count($array) > 0 && $array[0] == '..')
         array_shift($array);
 
+    // remove '..' items within array
     while (($index = array_search('..', $array)))
         array_splice($array, $index - 1, 2);
 
@@ -201,7 +203,7 @@ function load_filesystem(&$tree, $root, $reload_session = false) {
 
 function load_playlist(&$tree, $root, $playlist) {
     $path = $root.DIRECTORY_SEPARATOR.$playlist;
-    $handle = fopen($path, "rb");
+    $handle = fopen($path, 'r');
     if ($handle) {
         $contents = fread($handle, filesize($path));
         fclose($handle);
@@ -246,7 +248,7 @@ function callback_before($node, $level) {
         // file
         echo "\n".str_repeat('    ', $level)."<div class='file'>";
         echo "\n".str_repeat('    ', $level)."    <img src='./empty.png'>";
-        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' name='".$node->value['path']."' id='check:".$node->value['path']."' $checked>";
+        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' name='".$node->value['path']."' value='".$node->value['path']."' id='check:".$node->value['path']."' $checked>";
         echo "\n".str_repeat('    ', $level)."    <label for='check:".$node->value['path']."'>File: ".$node->value['basename']."</label>";
         echo "\n".str_repeat('    ', $level)."</div>";
     }
@@ -254,7 +256,7 @@ function callback_before($node, $level) {
         // directory
         echo "\n".str_repeat('    ', $level)."<div class='directory'>";
         echo "\n".str_repeat('    ', $level)."    <img src='./plus.png' id='image:".$node->value['path']."' onClick=\"javascript:toggle('".$node->value['path']."')\">";
-        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' name='".$node->value['path']."' id='check:".$node->value['path']."' $checked>";
+        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' name='".$node->value['path']."' value='".$node->value['path']."' id='check:".$node->value['path']."' $checked>";
         echo "\n".str_repeat('    ', $level)."    <label for='check:".$node->value['path']."'>Directory: ".$node->value['basename']."</label>";
         echo "\n".str_repeat('    ', $level)."    <div class='contents' id='wrapper:".$node->value['path']."' style='margin-left:".$indentation."px; display:none;'>";
     }
@@ -285,9 +287,10 @@ if (isset($_GET['playlist']) && !empty($_GET['playlist'])) {
         echo "<br>Header: \"".playlist_header()."\"";
         echo "<br>Root: \"$root\"";
         echo "<br>Playlist: \"$playlist\"<br>";
-        foreach (array_keys($_POST) as $file)
-            echo "<br>Song: ".implode(DIRECTORY_SEPARATOR, relative($root, $file));
-        die('<br><br>'.print_r($_POST,true)); // temp
+        foreach ($_POST as $file)
+            echo "<br>&nbsp;&nbsp;&nbsp;".implode(DIRECTORY_SEPARATOR, relative($root, $file));
+        //~ die('<br><br>'.print_r($_POST,true)); // temp
+        die();
     }
 
     $playlist = $_GET['playlist'];
