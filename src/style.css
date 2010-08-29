@@ -21,6 +21,7 @@ body {
 
 div.message {
     margin: 5px;
+    padding: 3px;
     border: 1px #999999 solid;
 }
 

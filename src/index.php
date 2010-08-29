@@ -20,11 +20,12 @@ define('ROOT_DIRECTORY',   '/multimedia');
 define('APPLICATION_NAME',          'm3uer');
 define('APPLICATION_VERSION',       '0.1.0 unstable');
 
+define('LINE_BREAK',                chr(10));
 define('COMMENT_SYMBOL',            '#');
 
-define('SESSION_MUSIC',             '---music');
-define('SESSION_PLAYLISTS',         '---playlists');
-define('SESSION_TREE',              '---tree');
+define('SESSION_MUSIC',             '.music');
+define('SESSION_PLAYLISTS',         '.playlists');
+define('SESSION_TREE',              '.tree');
 
 
 function playlist_header() {
@@ -79,13 +80,13 @@ function echo_playlists($reload_session = false) {
 
 function echo_comments($comments) {
     if (count($comments) > 0) {
-        echo "<div class='message' id='comments'><h1>Comments</h1><ul><li>".implode('</li><li>', $comments)."</li></ul></div>";
+        echo "<div class='message' id='comments'><!--<h1>Comments</h1>--><ul><li>".implode('</li><li>', $comments)."</li></ul></div>";
     }
 }
 
 function echo_broken_paths($broken) {
     if (count($broken) > 0) {
-        echo "<div class='message' id='broken'><h1>Broken paths</h1><ul><li>".implode('</li><li>', $broken)."</li></ul></div>";
+        echo "<div class='message' id='broken'><h1>Broken paths (will be removed when playlist is updated)</h1><ul><li>".implode('</li><li>', $broken)."</li></ul></div>";
     }
 }
 
@@ -203,35 +204,31 @@ function load_filesystem(&$tree, $root, $reload_session = false) {
 
 function load_playlist(&$tree, $root, $playlist) {
     $path = $root.DIRECTORY_SEPARATOR.$playlist;
-    $handle = fopen($path, 'r');
-    if ($handle) {
-        $contents = fread($handle, filesize($path));
-        fclose($handle);
+    $handle = fopen($path, 'r') or die("Error: could not open file '$root".DIRECTORY_SEPARATOR."$playlist' for reading");
 
-        $broken = array();
-        $comments = array();
-        foreach (explode(chr(10), $contents) as $line) {
-            $line = trim($line);
-            if (strlen($line) > 0) {
-                if ($line[0] == COMMENT_SYMBOL) {
-                    array_push($comments, trim(substr($line, 1)));
-                }
-                else {
-                    $file = $root.DIRECTORY_SEPARATOR.$line;
-                    $folders = path_to_array(str_replace(ROOT_DIRECTORY.DIRECTORY_SEPARATOR, '', $file));
-                    if ($tree->exists($folders))
-                        $tree->insert($folders, 'in_playlist', true);
-                    else
-                        array_push($broken, "\"$file\" => \"".implode(DIRECTORY_SEPARATOR, $folders)."\"");
-                }
+    $contents = fread($handle, filesize($path));
+    fclose($handle);
+
+    $broken = array();
+    $comments = array();
+    foreach (explode(LINE_BREAK, $contents) as $line) {
+        $line = trim($line);
+        if (strlen($line) > 0) {
+            if ($line[0] == COMMENT_SYMBOL) {
+                array_push($comments, trim(substr($line, 1)));
+            }
+            else {
+                $file = $root.DIRECTORY_SEPARATOR.$line;
+                $folders = path_to_array(str_replace(ROOT_DIRECTORY.DIRECTORY_SEPARATOR, '', $file));
+                if ($tree->exists($folders))
+                    $tree->insert($folders, 'in_playlist', true);
+                else
+                    array_push($broken, "\"$file\" => \"".implode(DIRECTORY_SEPARATOR, $folders)."\"");
             }
         }
-        echo_comments($comments);
-        echo_broken_paths($broken);
     }
-    else {
-        die("Error: could not open file '$root".DIRECTORY_SEPARATOR."$playlist' for reading");
-    }
+    echo_comments($comments);
+    echo_broken_paths($broken);
     
 }
 
@@ -275,22 +272,25 @@ echo_header();
 
 if (isset($_GET['playlist']) && !empty($_GET['playlist'])) {
     if (isset($_POST['update']) && isset($_POST['playlist'])) {
-        $temp = pathinfo($_POST['playlist']);
+        $path = $_POST['playlist'];
+        $temp = pathinfo($path);
         $root = $temp['dirname'];
         $playlist = $temp['basename'];
-        
+
+        // remove all keys not files
         unset($_POST['update']);
         unset($_POST['playlist']);
 
-        // filter out folders, and replace with all files in those directories
-        // dump to playlist file (header+array of files)
-        echo "<br>Header: \"".playlist_header()."\"";
-        echo "<br>Root: \"$root\"";
-        echo "<br>Playlist: \"$playlist\"<br>";
-        foreach ($_POST as $file)
-            echo "<br>&nbsp;&nbsp;&nbsp;".implode(DIRECTORY_SEPARATOR, relative($root, $file));
-        //~ die('<br><br>'.print_r($_POST,true)); // temp
-        die();
+        // make paths relative to playlists location
+        foreach ($_POST as $key=>$value)
+            $_POST[$key] = implode(DIRECTORY_SEPARATOR, relative($root, $value));
+
+        echo "<br>Writing to file...";
+        $handle = fopen($path, 'w') or die("Error: could not open file '$path' for writing");
+        fwrite($handle, playlist_header().LINE_BREAK);
+        fwrite($handle, implode(LINE_BREAK, $_POST));
+        fclose($handle);
+        echo "<br>Done writing";
     }
 
     $playlist = $_GET['playlist'];
