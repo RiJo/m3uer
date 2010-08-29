@@ -289,12 +289,13 @@ if (isset($_GET['playlist']) && !empty($_GET['playlist'])) {
         foreach ($_POST as $key=>$value)
             $_POST[$key] = implode(DIRECTORY_SEPARATOR, relative($root, $value));
 
-        echo "<br>Writing to file...";
+        // write to file
         $handle = fopen($path, 'w') or die("Error: could not open file '$path' for writing");
         fwrite($handle, playlist_header().LINE_BREAK);
         fwrite($handle, implode(LINE_BREAK, $_POST));
         fclose($handle);
-        echo "<br>Done writing";
+
+        echo "<div class='message' id='success'><h1>Playlist has been updated</h1></div>";
     }
 
     $playlist = $_GET['playlist'];
