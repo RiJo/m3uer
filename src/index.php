@@ -23,9 +23,9 @@ define('APPLICATION_VERSION',       '0.1.0 unstable');
 define('LINE_BREAK',                chr(10));
 define('COMMENT_SYMBOL',            '#');
 
-define('SESSION_MUSIC',             '.music');
-define('SESSION_PLAYLISTS',         '.playlists');
-define('SESSION_TREE',              '.tree');
+define('SESSION_MUSIC',             '..music');
+define('SESSION_PLAYLISTS',         '..playlists');
+define('SESSION_TREE',              '..tree');
 
 
 function playlist_header() {
@@ -111,6 +111,10 @@ function relative($root, $path) {
 function path_to_array($path) {
     $skip_directories = array('', '.');
     $array = explode(DIRECTORY_SEPARATOR, trim($path));
+    
+    // remove skip directories
+    $array = array_diff($array, $skip_directories);
+    $array = array_merge($array); // fix indexes
 
     // remove leading '..' items
     while (count($array) > 0 && $array[0] == '..')
@@ -120,8 +124,8 @@ function path_to_array($path) {
     while (($index = array_search('..', $array)))
         array_splice($array, $index - 1, 2);
 
-    $array = array_diff($array, $skip_directories);
-    return array_merge($array); // fix indexes
+    $array = array_merge($array); // fix indexes
+    return $array;
 }
 
 function get_files($path, $extensions) {
