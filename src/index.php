@@ -3,9 +3,7 @@
 /*
     TODO:
     * icons depending on filetype
-    * store files/playlists in session variaable
     * sort according to filenames
-    * add stylesheet
     * cannot handle single quote (see Fool's Garden)
 */
 
@@ -44,7 +42,7 @@ function echo_header() {
     var wrapper = document.getElementById('wrapper:'+id);
     var image = document.getElementById('image:'+id);
     wrapper.style.display = (wrapper.style.display != 'none' ? 'none' : '' );
-    image.src = (wrapper.style.display == 'none' ? './plus.png' : './minus.png');
+    image.src = (wrapper.style.display == 'none' ? './folder-closed.png' : './folder-open.png');
 }";
     echo "\n</script>";
     echo "\n</head><body>";
@@ -248,15 +246,16 @@ function callback_before($node, $level) {
     if ($node->is_leaf()) {
         // file
         echo "\n".str_repeat('    ', $level)."<div class='file'>";
-        echo "\n".str_repeat('    ', $level)."    <img src='./empty.png'>";
+        echo "\n".str_repeat('    ', $level)."    <label for='check:".$node->value['path']."'>";
+        echo "\n".str_repeat('    ', $level)."    <img src='./audio.png'>";
         echo "\n".str_repeat('    ', $level)."    <input type='checkbox' name='".$node->value['path']."' value='".$node->value['path']."' id='check:".$node->value['path']."' $checked>";
-        echo "\n".str_repeat('    ', $level)."    <label for='check:".$node->value['path']."'>File: ".$node->value['basename']."</label>";
+        echo "\n".str_repeat('    ', $level)."    File: ".$node->value['basename']."</label>";
         echo "\n".str_repeat('    ', $level)."</div>";
     }
     else {
         // directory
         echo "\n".str_repeat('    ', $level)."<div class='directory'>";
-        echo "\n".str_repeat('    ', $level)."    <img src='./plus.png' id='image:".$node->value['path']."' onClick=\"javascript:toggle('".$node->value['path']."')\">";
+        echo "\n".str_repeat('    ', $level)."    <img src='./folder-closed.png' id='image:".$node->value['path']."' onClick=\"javascript:toggle('".$node->value['path']."')\">";
         echo "\n".str_repeat('    ', $level)."    <input type='checkbox' name='".$node->value['path']."' value='".$node->value['path']."' id='check:".$node->value['path']."' $checked>";
         echo "\n".str_repeat('    ', $level)."    <label for='check:".$node->value['path']."'>Directory: ".$node->value['basename']."</label>";
         echo "\n".str_repeat('    ', $level)."    <div class='contents' id='wrapper:".$node->value['path']."' style='margin-left:".$indentation."px; display:none;'>";
