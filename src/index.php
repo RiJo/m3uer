@@ -5,6 +5,17 @@
     * icons depending on filetype
     * sort according to filenames
     * cannot handle single quote (see Fool's Garden)
+    * error messages when something fails
+*/
+
+/*
+    Structure of array with files:
+
+    array (
+        [filename1] => array(...fileinfo...),
+        [filename2] => array(...fileinfo...),
+        [filename3] => array(...fileinfo...),
+    )
 */
 
 date_default_timezone_set('Europe/Stockholm');
@@ -24,6 +35,9 @@ define('COMMENT_SYMBOL',            '#');
 define('SESSION_MUSIC',             '..music');
 define('SESSION_PLAYLISTS',         '..playlists');
 define('SESSION_TREE',              '..tree');
+
+define('PLAYLIST_FORMATS',          'm3u');
+define('MEDIA_FORMATS',             'mp3');
 
 
 function playlist_header() {
@@ -53,7 +67,7 @@ function echo_footer() {
 }
 
 function echo_playlists($reload_session = false) {
-    $extensions = array('m3u');
+    $extensions = explode(',', PLAYLIST_FORMATS);
 
     // load (cached) playlists
     $playlists = null;
@@ -86,6 +100,13 @@ function echo_broken_paths($broken) {
     if (count($broken) > 0) {
         echo "<div class='message' id='broken'><h1>Broken paths (will be removed when playlist is updated)</h1><ul><li>".implode('</li><li>', $broken)."</li></ul></div>";
     }
+}
+
+function get_file_info($path) {
+    $path = realpath($path);
+    $file_info = pathinfo($path);
+    $file_info['path'] = $path;
+    return $file_info;
 }
 
 function relative($root, $path) {
@@ -141,8 +162,7 @@ function get_files($path, $extensions) {
 
     while (false !== ($file = readdir($directory))) {
         $full_path = $path.DIRECTORY_SEPARATOR.$file;
-        $file_info = pathinfo($full_path);
-        $file_info['path'] = $full_path;
+        $file_info = get_file_info($full_path);
 
         if (is_dir($full_path) && !in_array($file, array('.', '..')))
             $files = array_merge($files, get_files($full_path, $extensions));
@@ -180,7 +200,7 @@ function load_tree($playlist, $reload_session = false) {
 }
 
 function load_filesystem(&$tree, $root, $reload_session = false) {
-    $extensions = array('mp3');
+    $extensions = explode(',', MEDIA_FORMATS);
 
     // load (cached) music files
     $music = null;
@@ -238,6 +258,66 @@ function load_playlist(&$tree, $root, $playlist) {
 
 
 
+function get_files_in_directory($path) {
+    $skip_directories = array('', '.', '..');
+
+    if (in_array($path, $skip_directories))
+        return array();
+
+    $files = array();
+
+    $handle = opendir($path);
+    if ($handle) {
+        while (false !== ($file = readdir($handle))) {
+            if (in_array($file, $skip_directories))
+                continue;
+
+            $full_path = $path.DIRECTORY_SEPARATOR.$file;
+
+            if (is_dir($full_path)) {
+                $files = array_merge($files, get_files_in_directory($full_path));
+            }
+            else {
+                $files[$full_path] = get_file_info($full_path);
+            }
+        }
+
+        closedir($handle);
+    }
+    else {
+        exit("Error: could not open directory \"$path\"");
+    }
+
+    return $files;
+}
+
+function extract_directories(&$data) {
+    $files = array();
+    foreach ($data as $file) {
+        if (is_dir($file)) {
+            $files = array_merge($files, get_files_in_directory($file));
+        }
+        else {
+            $files[$file] = get_file_info($file);
+        }
+    }
+    $data = $files;
+}
+
+function filter_media_files(&$data) {
+    $extensions = explode(',', MEDIA_FORMATS);
+
+    foreach ($data as $key=>$value) {
+        if (is_dir($key) || !in_array($value['extension'], $extensions)) {
+            unset($data[$key]); // BUG: could be dangerous because we're iterating the array!!
+        }
+    }
+}
+
+
+
+
+
 function callback_before($node, $level) {
     $indentation = 30;
 
@@ -284,14 +364,21 @@ if (isset($_GET['playlist']) && !empty($_GET['playlist'])) {
         unset($_POST['update']);
         unset($_POST['playlist']);
 
-        // make paths relative to playlists location
+        // replace directories with contents of it
+        extract_directories($_POST);
+
+        // remove non media files
+        filter_media_files($_POST);
+
+        // make paths relative to playlists location: array($realpath=>$relative)
+        $relative = array();
         foreach ($_POST as $key=>$value)
-            $_POST[$key] = implode(DIRECTORY_SEPARATOR, relative($root, $value));
+            $relative[$key] = implode(DIRECTORY_SEPARATOR, relative($root, $key));
 
         // write to file
         $handle = fopen($path, 'w') or die("Error: could not open file '$path' for writing");
         fwrite($handle, playlist_header().LINE_BREAK);
-        fwrite($handle, implode(LINE_BREAK, $_POST));
+        fwrite($handle, implode(LINE_BREAK, $relative));
         fclose($handle);
 
         echo "<div class='message' id='success'><h1>Playlist has been updated</h1></div>";
