@@ -2,6 +2,8 @@
 
 /*
     TODO:
+    * Expand node when checked
+
     * icons depending on filetype
     * sort according to filenames
     * cannot handle single quote (see Fool's Garden)
@@ -18,26 +20,7 @@
     )
 */
 
-date_default_timezone_set('Europe/Stockholm');
-session_start();
-
-require_once('Tree.php');
-
-define('ROOT_DIRECTORY',   '/multimedia');
-//define('ROOT_DIRECTORY',   '/share/HDA_DATA/Qmultimedia/Musik');
-
-define('APPLICATION_NAME',          'm3uer');
-define('APPLICATION_VERSION',       '0.1.0 unstable');
-
-define('LINE_BREAK',                chr(10));
-define('COMMENT_SYMBOL',            '#');
-
-define('SESSION_MUSIC',             '..music');
-define('SESSION_PLAYLISTS',         '..playlists');
-define('SESSION_TREE',              '..tree');
-
-define('PLAYLIST_FORMATS',          'm3u');
-define('MEDIA_FORMATS',             'mp3');
+require_once('config.php');
 
 
 function playlist_header() {
@@ -51,13 +34,21 @@ function echo_header() {
     echo "\n<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />";
     echo "\n<meta http-equiv='Content-Language' content='en' />";
     echo "\n<link rel='stylesheet' href='./style.css' type='text/css' />";
+
+    // Ext.js
+    echo "\n<script type=\"text/javascript\" src=\"../ext/adapter/ext/ext-base.js\"></script>";
+    echo "\n<script type=\"text/javascript\" src=\"../ext/ext-all-debug.js\"></script>";
+    echo "\n<script type=\"text/javascript\" src=\"Ext.js\"></script>";
+    echo "\n<link rel=\"stylesheet\" type=\"text/css\" href=\"../ext/resources/css/ext-all.css\">";
+
     echo "\n<script type='text/javascript'>";
-    echo "\nfunction toggle(id) {
-    var wrapper = document.getElementById('wrapper:'+id);
-    var image = document.getElementById('image:'+id);
-    wrapper.style.display = (wrapper.style.display != 'none' ? 'none' : '' );
-    image.src = (wrapper.style.display == 'none' ? './folder-closed.png' : './folder-open.png');
-}";
+    //~ echo "\nfunction toggle(id) {
+    //~ var wrapper = document.getElementById('wrapper:'+id);
+    //~ var image = document.getElementById('image:'+id);
+    //~ wrapper.style.display = (wrapper.style.display != 'none' ? 'none' : '' );
+    //~ image.src = (wrapper.style.display == 'none' ? './folder-closed.png' : './folder-open.png');
+    //~ }";
+    echo "\njavascript:render('".ROOT_DIRECTORY."', '".((empty($_GET['playlist'])) ? '' : $_GET['playlist'])."');";
     echo "\n</script>";
     echo "\n</head><body>";
 }
@@ -66,341 +57,72 @@ function echo_footer() {
     echo "\n</body></html>";
 }
 
-function echo_playlists($reload_session = false) {
-    $extensions = explode(',', PLAYLIST_FORMATS);
+function echo_playlists($playlists) {
+    echo "<h1>Playlists</h1>";
+    echo "<p><ul>";
+    foreach ($playlists as $playlist) {
+        echo "<li><a href='".basename($_SERVER['PHP_SELF'])."?playlist=$playlist'>$playlist</a></li>";
+    }
+    echo "</ul></p>";
+}
 
-    // load (cached) playlists
+////////////////////////////////////////////////////////////////////////////////
+//   LOAD   ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+function load_playlists($root, $extensions, $reload_session = false) {
     $playlists = null;
     if (!isset($_SESSION[SESSION_PLAYLISTS]) || $reload_session) {
-        $playlists = get_files(ROOT_DIRECTORY, $extensions);
+        $playlists = get_files($root, '.', $extensions);
         $_SESSION[SESSION_PLAYLISTS] = serialize($playlists);
     }
     else {
         $playlists = unserialize($_SESSION[SESSION_PLAYLISTS]);
     }
-
-    // echo playlists
-    echo "<h1>Playlists</h1>";
-    echo "<p><ul>";
-    foreach ($playlists as $path=>$info) {
-        if (isset($info['extension']) && in_array($info['extension'], $extensions)) {
-            echo "<li><a href='".basename($_SERVER['PHP_SELF'])."?playlist=$info[path]'>$info[filename]</a></li>";
-        }
-    }
-    echo "</ul></p>";
+    return $playlists;
 }
 
-function echo_comments($comments) {
-    if (count($comments) > 0) {
-        echo "<div class='message' id='comments'><!--<h1>Comments</h1>--><ul><li>".implode('</li><li>', $comments)."</li></ul></div>";
-    }
-}
+// TODO: reuse when loading tree-structure..
+function get_files($root, $relative_path, $extensions) {
+    $full_path = $root.DIRECTORY_SEPARATOR.$relative_path;
+    if (!is_dir($full_path))
+        die("\"$full_path\" is not a directory");
 
-function echo_broken_paths($broken) {
-    if (count($broken) > 0) {
-        echo "<div class='message' id='broken'><h1>Broken paths (will be removed when playlist is updated)</h1><ul><li>".implode('</li><li>', $broken)."</li></ul></div>";
-    }
-}
-
-function get_file_info($path) {
-    $path = realpath($path);
-    $file_info = pathinfo($path);
-    $file_info['path'] = $path;
-    return $file_info;
-}
-
-function relative($root, $path) {
-    $root = path_to_array($root);
-    $path = path_to_array($path);
-
-    $relative = array('.');
-    if (count($root) <= count($path)) {
-        while (count($root) > 0 && $root[0] == $path[0]) {
-            array_shift($root);
-            array_shift($path);
-        }
-        foreach ($root as $subdirectory) {
-            array_push($relative, '..');
-        }
-        $relative = array_merge($relative, $path);
-    }
-    return $relative;
-}
-
-function path_to_array($path) {
-    $skip_directories = array('', '.');
-    $array = explode(DIRECTORY_SEPARATOR, trim($path));
-    
-    // remove skip directories
-    $array = array_diff($array, $skip_directories);
-    $array = array_merge($array); // fix indexes
-
-    // remove leading '..' items
-    while (count($array) > 0 && $array[0] == '..')
-        array_shift($array);
-
-    // remove '..' items within array
-    while (($index = array_search('..', $array)))
-        array_splice($array, $index - 1, 2);
-
-    $array = array_merge($array); // fix indexes
-    return $array;
-}
-
-function get_files($path, $extensions) {
-    if (!is_dir($path))
-        die("\"$path\" is not a directory");
-
-    $directory = opendir($path);
+    $directory = opendir($full_path);
     if (!$directory)
-        die("Could not open directory \"$path\"");
+        die("Could not open directory \"$full_path\"");
 
     $files = array();
 
-    $files[$path] = pathinfo($path);
-    $files[$path]['path'] = $path;
-
     while (false !== ($file = readdir($directory))) {
-        $full_path = $path.DIRECTORY_SEPARATOR.$file;
-        $file_info = get_file_info($full_path);
-
+        $relative_path = $relative_path.DIRECTORY_SEPARATOR.$file;
+        $file_info = get_file_info($full_path.DIRECTORY_SEPARATOR.$relative_path);
+        //~ echo "<pre>".print_r($file_info,true)."</pre>";
         if (is_dir($full_path) && !in_array($file, array('.', '..')))
-            $files = array_merge($files, get_files($full_path, $extensions));
+            $files = array_merge($files, get_files($root, $relative_path, $extensions));
         elseif (isset($file_info['extension']) && in_array($file_info['extension'], $extensions))
-            $files[$full_path] = $file_info;
+            array_push($files, simplify_path($file));
     }
     closedir($directory);
     return $files;
 }
 
-
-
-
-
-function load_tree($playlist, $reload_session = false) {
-    $temp = pathinfo($playlist);
-    $root = $temp['dirname'];
-    $playlist = $temp['basename'];
-
-    // load (cached) filestructure
-    $tree = null;
-    if (!isset($_SESSION[SESSION_TREE]) || $reload_session) {
-        $tree = new Node();
-        $tree->value = DIRECTORY_SEPARATOR;
-        load_filesystem($tree, $root, $reload_session);
-        $_SESSION[SESSION_TREE] = serialize($tree);
-    }
-    else {
-        $tree = unserialize($_SESSION[SESSION_TREE]);
-    }
-
-    load_playlist($tree, $root, $playlist);
-
-    return $tree;
-}
-
-function load_filesystem(&$tree, $root, $reload_session = false) {
-    $extensions = explode(',', MEDIA_FORMATS);
-
-    // load (cached) music files
-    $music = null;
-    if (!isset($_SESSION[SESSION_MUSIC]) || $reload_session) {
-        $music = get_files(ROOT_DIRECTORY, $extensions);
-        $_SESSION[SESSION_MUSIC] = serialize($music);
-    }
-    else {
-        $music = unserialize($_SESSION[SESSION_MUSIC]);
-    }
-
-    foreach ($music as $path=>$info) {
-        if (strlen($info['filename']) > 0) {
-            $folders = path_to_array(str_replace(ROOT_DIRECTORY.DIRECTORY_SEPARATOR, '', $path));
-            $tree->insert($folders, 'path', $info['path']);
-            $tree->insert($folders, 'dirname', $info['dirname']);
-            $tree->insert($folders, 'basename', $info['basename']);
-            $tree->insert($folders, 'filename', $info['filename']);
-            $tree->insert($folders, 'exists', true);
-        }
-    }
-}
-
-function load_playlist(&$tree, $root, $playlist) {
-    $path = $root.DIRECTORY_SEPARATOR.$playlist;
-    $handle = fopen($path, 'r') or die("Error: could not open file '$root".DIRECTORY_SEPARATOR."$playlist' for reading");
-
-    $contents = fread($handle, filesize($path));
-    fclose($handle);
-
-    $broken = array();
-    $comments = array();
-    foreach (explode(LINE_BREAK, $contents) as $line) {
-        $line = trim($line);
-        if (strlen($line) > 0) {
-            if ($line[0] == COMMENT_SYMBOL) {
-                array_push($comments, trim(substr($line, 1)));
-            }
-            else {
-                $file = $root.DIRECTORY_SEPARATOR.$line;
-                $folders = path_to_array(str_replace(ROOT_DIRECTORY.DIRECTORY_SEPARATOR, '', $file));
-                if ($tree->exists($folders))
-                    $tree->insert($folders, 'in_playlist', true);
-                else
-                    array_push($broken, "\"$file\" => \"".implode(DIRECTORY_SEPARATOR, $folders)."\"");
-            }
-        }
-    }
-    echo_comments($comments);
-    echo_broken_paths($broken);
-    
-}
-
-
-
-
-
-function get_files_in_directory($path) {
-    $skip_directories = array('', '.', '..');
-
-    if (in_array($path, $skip_directories))
-        return array();
-
-    $files = array();
-
-    $handle = opendir($path);
-    if ($handle) {
-        while (false !== ($file = readdir($handle))) {
-            if (in_array($file, $skip_directories))
-                continue;
-
-            $full_path = $path.DIRECTORY_SEPARATOR.$file;
-
-            if (is_dir($full_path)) {
-                $files = array_merge($files, get_files_in_directory($full_path));
-            }
-            else {
-                $files[$full_path] = get_file_info($full_path);
-            }
-        }
-
-        closedir($handle);
-    }
-    else {
-        exit("Error: could not open directory \"$path\"");
-    }
-
-    return $files;
-}
-
-function extract_directories(&$data) {
-    $files = array();
-    foreach ($data as $file) {
-        if (is_dir($file)) {
-            $files = array_merge($files, get_files_in_directory($file));
-        }
-        else {
-            $files[$file] = get_file_info($file);
-        }
-    }
-    $data = $files;
-}
-
-function filter_media_files(&$data) {
-    $extensions = explode(',', MEDIA_FORMATS);
-
-    foreach ($data as $key=>$value) {
-        if (is_dir($key) || !in_array($value['extension'], $extensions)) {
-            unset($data[$key]); // BUG: could be dangerous because we're iterating the array!!
-        }
-    }
-}
-
-
-
-
-
-function callback_before($node, $level) {
-    $indentation = 30;
-
-    $checked = $node->evaluate('in_playlist', true);
-    $checked = ($checked ? 'checked' : '');
-    if ($node->is_leaf()) {
-        // file
-        echo "\n".str_repeat('    ', $level)."<div class='file'>";
-        echo "\n".str_repeat('    ', $level)."    <label for='check:".$node->value['path']."'>";
-        echo "\n".str_repeat('    ', $level)."    <img src='./audio.png'>";
-        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' name='".$node->value['path']."' value='".$node->value['path']."' id='check:".$node->value['path']."' $checked>";
-        echo "\n".str_repeat('    ', $level)."    File: ".$node->value['basename']."</label>";
-        echo "\n".str_repeat('    ', $level)."</div>";
-    }
-    else {
-        // directory
-        echo "\n".str_repeat('    ', $level)."<div class='directory'>";
-        echo "\n".str_repeat('    ', $level)."    <img src='./folder-closed.png' id='image:".$node->value['path']."' onClick=\"javascript:toggle('".$node->value['path']."')\">";
-        echo "\n".str_repeat('    ', $level)."    <input type='checkbox' name='".$node->value['path']."' value='".$node->value['path']."' id='check:".$node->value['path']."' $checked>";
-        echo "\n".str_repeat('    ', $level)."    <label for='check:".$node->value['path']."'>Directory: ".$node->value['basename']."</label>";
-        echo "\n".str_repeat('    ', $level)."    <div class='contents' id='wrapper:".$node->value['path']."' style='margin-left:".$indentation."px; display:none;'>";
-    }
-}
-
-function callback_after($node, $level) {
-    if (!$node->is_leaf()) {
-        // directory
-        echo "\n".str_repeat('    ', $level)."    </div>";
-        echo "\n".str_repeat('    ', $level)."</div>";
-    }
-}
-
+////////////////////////////////////////////////////////////////////////////////
+//   PRINTOUT   ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 echo_header();
 
+$root = ROOT_DIRECTORY;
+$extensions = explode(',', PLAYLIST_FORMATS);
+
 if (isset($_GET['playlist']) && !empty($_GET['playlist'])) {
-    if (isset($_POST['update']) && isset($_POST['playlist'])) {
-        $path = $_POST['playlist'];
-        $temp = pathinfo($path);
-        $root = $temp['dirname'];
-        $playlist = $temp['basename'];
-
-        // remove all keys not files
-        unset($_POST['update']);
-        unset($_POST['playlist']);
-
-        // replace directories with contents of it
-        extract_directories($_POST);
-
-        // remove non media files
-        filter_media_files($_POST);
-
-        // make paths relative to playlists location: array($realpath=>$relative)
-        $relative = array();
-        foreach ($_POST as $key=>$value)
-            $relative[$key] = implode(DIRECTORY_SEPARATOR, relative($root, $key));
-
-        // write to file
-        $handle = fopen($path, 'w') or die("Error: could not open file '$path' for writing");
-        fwrite($handle, playlist_header().LINE_BREAK);
-        fwrite($handle, implode(LINE_BREAK, $relative));
-        fclose($handle);
-
-        echo "<div class='message' id='success'><h1>Playlist has been updated</h1></div>";
-    }
-
-    $playlist = $_GET['playlist'];
-    if (!file_exists($playlist))
-        die("Could not locate playlist \"$playlist\"");
-
-    echo "<h1>$playlist</h1>";
-    echo "<p><a href='".basename($_SERVER['PHP_SELF'])."'>Back to playlists</a></p>";
-
-    $tree = load_tree($playlist);
-
-    echo "<form method='post' action='".basename($_SERVER['PHP_SELF'])."?playlist=$playlist'>";
-    echo "<input type='hidden' name='playlist' value='$playlist'>";
-    $tree->iterate('callback_before', 'callback_after', 1);
-    echo "<input type='submit' name='update' value='Generate playlist'>";
-    echo "<form>";
+    // foo
 }
 else {
-    echo_playlists();
+    $playlists = load_playlists($root, $extensions, true);
+    //~ echo "Playlists:<br><pre>".print_r($playlists, true)."</pre>";
+    echo_playlists($playlists);
 }
 
 echo_footer();

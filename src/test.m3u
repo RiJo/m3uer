@@ -1,23 +1,6 @@
-/multimedia/Nordman/Anno 2005/Nordman - Allt eller ingenting.mp3
-/multimedia/Nordman/Anno 2005/Nordman - Då var en annan tid.mp3
-/multimedia/Nordman/Anno 2005/Nordman - Ensam varg.mp3
-/multimedia/Nordman/Anno 2005/Nordman - Ge mig tid.mp3
-/multimedia/Nordman/Anno 2005/Nordman - Jag kan se nu.mp3
-/multimedia/Nordman/Anno 2005/Nordman - Känner du ljuset.mp3
-/multimedia/Nordman/Anno 2005/Nordman - Livet tar det livet ger.mp3
-/multimedia/Nordman/Anno 2005/Nordman - Ödet var min väg.mp3
-/multimedia/Nordman/Anno 2005/Nordman - Om jag alltid vänder om.mp3
-/multimedia/Nordman/Anno 2005/Nordman - Se horisonten.mp3
-/multimedia/Nordman/Anno 2005/Nordman - Ta mig för den jag är.mp3
-/multimedia/Nordman/Anno 2005/Nordman - Vila hos dig.mp3
-/broken/broken/broken.mp3
-
-#/this/is/a/comment/which/should/be/ignored/
-/multimedia/Kent/Isola/Kent - 747.mp3
-/multimedia/this/file/does/not/exist.mp3
-
-
-
-
-/test/
-
+# This is a comment
+./foo/foo.mp3
+./bar.mp3
+#./skip/this.one
+./foo/test.mp3
+./foo/maz.mp3
