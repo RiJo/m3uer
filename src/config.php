@@ -18,7 +18,7 @@ define('COMMENT_SYMBOL',            '#');
 
 define('SESSION_MUSIC',             'music');
 define('SESSION_PLAYLISTS',         'playlists');
-define('SESSION_TREE',              'tree');
+define('SESSION_FILESYSTEM',              'tree');
 
 define('PLAYLIST_FORMATS',          'm3u');
 define('MEDIA_FORMATS',             'mp3');

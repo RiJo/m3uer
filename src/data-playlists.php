@@ -1,9 +1,10 @@
 <?php
 
-if (isset($_GET['root'])) {
+if (isset($_GET['root']) && isset($_SESSION[SESSION_PLAYLISTS])) {
     $root = $_GET['root'];
+    $platlists = $_SESSION[SESSION_PLAYLISTS];
 
-    echo "todo";
+    json_encode($platlists);
 }
 
 ?>
