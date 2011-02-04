@@ -10,17 +10,8 @@
     * error messages when something fails
 */
 
-/*
-    Structure of array with files:
-
-    array (
-        [filename1] => array(...fileinfo...),
-        [filename2] => array(...fileinfo...),
-        [filename3] => array(...fileinfo...),
-    )
-*/
-
 require_once('config.php');
+require_once('file_handling.php');
 
 
 function playlist_header() {
@@ -33,22 +24,17 @@ function echo_header() {
     echo "\n<title>".APPLICATION_NAME." v.".APPLICATION_VERSION."</title>";
     echo "\n<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />";
     echo "\n<meta http-equiv='Content-Language' content='en' />";
+
     echo "\n<link rel='stylesheet' href='./style.css' type='text/css' />";
+    echo "\n<link rel=\"stylesheet\" type=\"text/css\" href=\"../ext/resources/css/ext-all.css\">";
 
     // Ext.js
     echo "\n<script type=\"text/javascript\" src=\"../ext/adapter/ext/ext-base.js\"></script>";
     echo "\n<script type=\"text/javascript\" src=\"../ext/ext-all-debug.js\"></script>";
     echo "\n<script type=\"text/javascript\" src=\"Ext.js\"></script>";
-    echo "\n<link rel=\"stylesheet\" type=\"text/css\" href=\"../ext/resources/css/ext-all.css\">";
 
     echo "\n<script type='text/javascript'>";
-    //~ echo "\nfunction toggle(id) {
-    //~ var wrapper = document.getElementById('wrapper:'+id);
-    //~ var image = document.getElementById('image:'+id);
-    //~ wrapper.style.display = (wrapper.style.display != 'none' ? 'none' : '' );
-    //~ image.src = (wrapper.style.display == 'none' ? './folder-closed.png' : './folder-open.png');
-    //~ }";
-    echo "\njavascript:render('".ROOT_DIRECTORY."', '".((empty($_GET['playlist'])) ? '' : $_GET['playlist'])."');";
+    echo "\n    javascript:render('".ROOT_DIRECTORY."', '".((empty($_GET['playlist'])) ? '' : $_GET['playlist'])."');";
     echo "\n</script>";
     echo "\n</head><body>";
 }
@@ -57,13 +43,13 @@ function echo_footer() {
     echo "\n</body></html>";
 }
 
-function echo_playlists($playlists) {
-    echo "<h1>Playlists</h1>";
-    echo "<p><ul>";
+function echo_playlists($root, $playlists) {
+    echo "\n<h1>Playlists ($root)</h1>";
+    echo "\n<ul>";
     foreach ($playlists as $playlist) {
-        echo "<li><a href='".basename($_SERVER['PHP_SELF'])."?playlist=$playlist'>$playlist</a></li>";
+        echo "\n<li><a href='".basename($_SERVER['PHP_SELF'])."?playlist=$playlist'>$playlist</a></li>";
     }
-    echo "</ul></p>";
+    echo "\n</ul>";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,6 +60,9 @@ function load_playlists($root, $extensions, $reload_session = false) {
     $playlists = null;
     if (!isset($_SESSION[SESSION_PLAYLISTS]) || $reload_session) {
         $playlists = get_files($root, '.', $extensions);
+        // TODO: place this somewhere else?
+        for ($i = 0; $i < count($playlists); $i++)
+            $playlists[$i] = str_replace($root.DIRECTORY_SEPARATOR, '', $playlists[$i]);
         $_SESSION[SESSION_PLAYLISTS] = serialize($playlists);
     }
     else {
@@ -82,47 +71,21 @@ function load_playlists($root, $extensions, $reload_session = false) {
     return $playlists;
 }
 
-// TODO: reuse when loading tree-structure..
-function get_files($root, $relative_path, $extensions) {
-    $full_path = $root.DIRECTORY_SEPARATOR.$relative_path;
-    if (!is_dir($full_path))
-        die("\"$full_path\" is not a directory");
-
-    $directory = opendir($full_path);
-    if (!$directory)
-        die("Could not open directory \"$full_path\"");
-
-    $files = array();
-
-    while (false !== ($file = readdir($directory))) {
-        $relative_path = $relative_path.DIRECTORY_SEPARATOR.$file;
-        $file_info = get_file_info($full_path.DIRECTORY_SEPARATOR.$relative_path);
-        //~ echo "<pre>".print_r($file_info,true)."</pre>";
-        if (is_dir($full_path) && !in_array($file, array('.', '..')))
-            $files = array_merge($files, get_files($root, $relative_path, $extensions));
-        elseif (isset($file_info['extension']) && in_array($file_info['extension'], $extensions))
-            array_push($files, simplify_path($file));
-    }
-    closedir($directory);
-    return $files;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 //   PRINTOUT   ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 echo_header();
 
-$root = ROOT_DIRECTORY;
 $extensions = explode(',', PLAYLIST_FORMATS);
 
 if (isset($_GET['playlist']) && !empty($_GET['playlist'])) {
     // foo
 }
 else {
-    $playlists = load_playlists($root, $extensions, true);
+    $playlists = load_playlists(ROOT_DIRECTORY, $extensions);
     //~ echo "Playlists:<br><pre>".print_r($playlists, true)."</pre>";
-    echo_playlists($playlists);
+    echo_playlists(ROOT_DIRECTORY, $playlists);
 }
 
 echo_footer();

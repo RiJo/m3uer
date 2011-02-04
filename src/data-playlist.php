@@ -1,6 +1,7 @@
 <?php 
 
 require_once('config.php');
+require_once('file_handling.php');
 
 class File {
     public $text = "";
@@ -152,12 +153,11 @@ function load_tree($root, $reload_session = false) {
     return $tree;
 }
 
-if (isset($_GET['playlist'])) {
-    $playlist = $_GET['playlist'];
+if (isset($_GET['root']) && isset($_GET['path'])) {
+    $root = $_GET['root'];
+    $playlist = $_GET['path'];
     if (!file_exists($playlist))
         die("Could not locate playlist \"$playlist\"");
-
-    $root = ROOT_DIRECTORY;
 
     $tree = load_tree($root, $playlist);
 

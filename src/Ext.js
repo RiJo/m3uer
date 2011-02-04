@@ -21,7 +21,7 @@ function render_playlist(root, playlist) {
         userArrows: true,
         animate: true,
         autoScroll: true,
-        dataUrl: 'data.php?playlist=' + playlist,
+        dataUrl: 'data-playlist.php?root='+root+'&path='+playlist,
         root: {
             nodeType: 'async',
             text: root
@@ -51,11 +51,15 @@ function render_playlist(root, playlist) {
             text: 'Cancel',
             handler: function() {
                 Ext.Msg.show({
-                    title: 'Abort', 
-                    msg: 'Cancel pressed',
-                    icon: Ext.Msg.INFO,
-                    minWidth: 200,
-                    buttons: Ext.Msg.OK
+                    title: 'Cancel',
+                    msg: 'Are you sure you want to cancel?',
+                    buttons: Ext.Msg.YESNO,
+                    icon: Ext.MessageBox.QUESTION,
+                    fn: function(response) {
+                        if (response == "yes") {
+                            window.location = 'index.php';
+                        }
+                    }
                 });
             }
         },
