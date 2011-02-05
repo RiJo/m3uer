@@ -8,6 +8,10 @@ function get_file_info($path) {
     return $file_info;
 }
 
+/*
+ * Makes the same thing as realpath() but doesn't return empty sting on relative
+ * paths.
+ */
 function simplify_path($path) {
     $temp = array();
 

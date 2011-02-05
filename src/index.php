@@ -56,10 +56,10 @@ function echo_playlists($root, $playlists) {
 //   LOAD   ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-function load_filessytem($root, $reload_session = false) {
+function load_filessytem($root, $extensions, $reload_session = false) {
     if (!isset($_SESSION[SESSION_FILESYSTEM]) || $reload_session) {
         $tree = new Filesystem();
-        $tree->load($root);
+        $tree->load($root, $extensions);
 
         $_SESSION[SESSION_FILESYSTEM] = serialize($tree);
     }
@@ -84,18 +84,15 @@ function load_playlists($root, $extensions, $reload_session = false) {
 //   PRINTOUT   ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-load_filessytem(ROOT_DIRECTORY, true);
+load_filessytem(ROOT_DIRECTORY, explode(',', MEDIA_FORMATS), true);
 
 echo_header();
-
-
-$extensions = explode(',', PLAYLIST_FORMATS);
 
 if (isset($_GET['playlist']) && !empty($_GET['playlist'])) {
     // foo
 }
 else {
-    $playlists = load_playlists(ROOT_DIRECTORY, $extensions);
+    $playlists = load_playlists(ROOT_DIRECTORY, explode(',', PLAYLIST_FORMATS));
     //~ echo "Playlists:<br><pre>".print_r($playlists, true)."</pre>";
     echo_playlists(ROOT_DIRECTORY, $playlists);
 }

@@ -1,5 +1,7 @@
 <?php
 
+require_once('file_handling.php');
+
 class File {
     public $text = "";
     public $id = "";
@@ -21,9 +23,9 @@ class Filesystem {
     private $root_path = '';
     private $nodes = array();
 
-    public function load($root_path) {
+    public function load($root_path, $extensions) {
         $this->root_path = $root_path;
-        $this->load_from_path($this->nodes, '.', array('mp3'));
+        return $this->load_from_path($this->nodes, '.', $extensions);
     }
 
     private function load_from_path(&$parent, $path, $extensions) {

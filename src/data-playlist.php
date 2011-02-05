@@ -5,11 +5,12 @@ require_once('file_handling.php');
 require_once('Filesystem.php');
 
 function load_playlist($root, $playlist) {
-    $path = $root.DIRECTORY_SEPARATOR.$playlist;
-    $handle = fopen($path, 'r')
-        or die("Error: could not open file '$path' for reading");
+    $playlist_file_info = get_file_info($root.DIRECTORY_SEPARATOR.$playlist);
 
-    $contents = fread($handle, filesize($path));
+    $handle = fopen($playlist_file_info['path'], 'r')
+        or die("Error: could not open file '$playlist_file_info[path]' for reading");
+
+    $contents = fread($handle, filesize($playlist_file_info['path']));
     fclose($handle);
 
     $result = array(
@@ -25,12 +26,14 @@ function load_playlist($root, $playlist) {
                 array_push($result['comments'], trim(substr($line, 1)));
             }
             else {
-                $file = simplify_path($root.DIRECTORY_SEPARATOR.$line);
-                
-                if (file_exists($file))
-                    array_push($result['valid'], $file);
+                $file_path = realpath($line);
+                if (strlen($file_path) == 0) // Check if path is relative
+                    $file_path = simplify_path($playlist_file_info['dirname'].DIRECTORY_SEPARATOR.$line);
+
+                if (file_exists($file_path))
+                    array_push($result['valid'], $file_path);
                 else
-                    array_push($result['invalid'], $file);
+                    array_push($result['invalid'], $file_path);
             }
         }
     }
