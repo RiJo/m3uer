@@ -1,9 +1,3 @@
-Ext.onReady(function() {
-
-
-    
-    //alert("RiJo has configured Ext properly!");
-});
 
 function render(root, playlist) {
     if (playlist == '')
@@ -66,19 +60,34 @@ function render_playlist(root, playlist) {
         {
             text: 'Save',
             handler: function() {
-                var msg = '', selNodes = tree.getChecked();
-                Ext.each(selNodes, function(node) {
+                var msg = '';
+                Ext.each(tree.getChecked(), function(node) {
                     if(msg.length > 0) {
-                        msg += '<br>';
+                        msg += ',';
                     }
                     msg += node.id;
                 });
-                Ext.Msg.show({
-                    title: 'Completed Tasks', 
-                    msg: msg.length > 0 ? msg : 'None',
-                    icon: Ext.Msg.INFO,
-                    minWidth: 200,
-                    buttons: Ext.Msg.OK
+                // Basic request in Ext
+                Ext.Ajax.request({
+                    url: 'save_playlist.php?root='+root+'&path='+playlist,
+                    params: { data: Ext.encode(msg.split(',')) },
+                    success: function(response, opts) {
+                        //var obj = Ext.decode(response.responseText);
+                        //var jsonData = Ext.decode(result.responseText);
+                        //var options = Ext.decode(result.responseText).options;
+
+                        //var resultMessage = jsonData.data.result;
+                        Ext.Msg.show({
+                            title: 'Playlist saved', 
+                            msg: response.responseText,
+                            icon: Ext.Msg.INFO,
+                            minWidth: 200,
+                            buttons: Ext.Msg.OK
+                        });
+                    }
+                    //failure: function(response, opts) {
+                        // nop
+                    //}
                 });
             }
         }]

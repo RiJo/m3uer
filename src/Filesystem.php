@@ -9,6 +9,7 @@ class File {
     public $leaf = true;
     public $expanded = false;
     public $checked = false;
+    //public $uiProvider = 'tristate';
     public $children = array();
 
     function  __construct($id,$text,$iconCls,$leaf) {

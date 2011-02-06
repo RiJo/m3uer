@@ -1,0 +1,121 @@
+[{
+    text: 'To Do', 
+    checked: false,
+    uiProvider: 'tristate',
+    children: [{
+        text: 'Go jogging',
+        leaf: true,
+        checked: false,
+        uiProvider: 'tristate'
+    },{
+        text: 'Take a nap',
+        leaf: true,
+        checked: false,
+        uiProvider: 'tristate'
+    },{
+        text: 'Climb Everest',
+        leaf: true,
+        checked: false,
+        uiProvider: 'tristate'
+    }]
+},{
+    text: 'Grocery List',
+    checked: false,
+    uiProvider: 'tristate',
+    children: [{
+        text: 'Bananas',
+        leaf: true,
+        checked: false,
+        uiProvider: 'tristate'
+    },{
+        text: 'Milk',
+        leaf: true,
+        checked: false,
+        uiProvider: 'tristate'
+    },{
+        text: 'Cereal',
+        leaf: true,
+        checked: false,
+        uiProvider: 'tristate'
+    },{
+        text: 'Energy foods',
+        checked: false,
+        uiProvider: 'tristate',
+        children: [{
+            text: 'Coffee',
+            leaf: true,
+            checked: false,
+            uiProvider: 'tristate'
+        },{
+            text: 'Red Bull',
+            leaf: true,
+            checked: false,
+            uiProvider: 'tristate'
+        }]
+    }]
+},{
+    text: 'Remodel Project',
+    checked: false,
+    uiProvider: 'tristate',
+    children: [{
+        text: 'Finish the budget',
+        leaf: true,
+        checked: false,
+        uiProvider: 'tristate'
+    },{
+        text: 'Call contractors',
+        leaf: true,
+        checked: false,
+        uiProvider: 'tristate'
+    },{
+        text: 'Choose design',
+        leaf: true,
+        checked: false,
+        uiProvider: 'tristate'
+    }]
+},{
+    text: 'Children care',
+    checked: false,
+    uiProvider: 'tristate',
+    children: [{
+        text: 'Cook lunch',
+        checked: false,
+        uiProvider: 'tristate',
+        children: [{
+            text: 'Buy food',
+            checked: false,
+            uiProvider: 'tristate',
+            children: [{
+                text: 'Drive to the supermarket',
+                leaf: true,
+                checked: false,
+                uiProvider: 'tristate'
+           },{
+                text: 'Get items',
+                leaf: true,
+                checked: false,
+                uiProvider: 'tristate'
+           },{
+                text: 'Pay items',
+                leaf: true,
+                checked: false,
+                uiProvider: 'tristate'
+           },{
+                text: 'Drive back home',
+                leaf: true,
+                checked: false,
+                uiProvider: 'tristate'
+           }]
+       }]
+    },{
+        text: 'Go to the playground',
+        leaf: true,
+        checked: false,
+        uiProvider: 'tristate'
+    },{
+        text: 'Visit grandma',
+        leaf: true,
+        checked: false,
+        uiProvider: 'tristate'
+    }]
+}]
