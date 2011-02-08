@@ -7,17 +7,17 @@ require_once('file_handling.php');
 $passed_all = true;
 $test_number = 1;
 
-function test($reference, $actual) {
+function test($actual, $reference) {
     global $passed_all;
     global $test_number;
 
-    $condition = ($reference === $actual);
+    $condition = ($actual === $reference);
     $passed_all &= $condition;
 
     if ($condition)
         echo "#$test_number: <font color=\"#006600\">passed</font>";
     else
-        echo "#$test_number: <font color=\"#660000\">failed</font> ('$reference' != '$actual')";
+        echo "#$test_number: <font color=\"#660000\">failed</font> ('$actual' should be '$reference')";
     echo"<br>";
     $test_number++;
 }
@@ -29,10 +29,11 @@ test(simplify_path("../foo/bar/baz"), "../foo/bar/baz");
 test(simplify_path("/foo/./bar/baz"), "/foo/bar/baz");
 test(simplify_path("/foo/abc/../bar/baz"), "/foo/bar/baz");
 test(simplify_path("/foo/abc/.././bar/baz"), "/foo/bar/baz");
+test(simplify_path("/abc/def/ghi/../../jkl"), "/abc/jkl");
 test(simplify_path("./././."), "");
 test(simplify_path("././././."), "");
-test(simplify_path("../../../.."), "..");
-test(simplify_path("../../../../.."), "..");
+test(simplify_path("../../../.."), "../../../..");
+test(simplify_path("../../../../.."), "../../../../..");
 
 
 

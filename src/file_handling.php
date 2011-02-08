@@ -15,17 +15,24 @@ function get_file_info($path) {
 function simplify_path($path) {
     $temp = array();
 
+    $skip_previous = 0;
     $items = explode(DIRECTORY_SEPARATOR, $path);
     for ($i = count($items) - 1; $i >= 0 ; $i--) {
         if ($items[$i] === ".")
             continue;
-        if ($items[$i] === ".." && $i > 0) {
-            if ($i > 1)
-                $i--;
+        if ($items[$i] === "..") {
+            $skip_previous++;
+            continue;
+        }
+        if ($skip_previous > 0) {
+            $skip_previous--;
             continue;
         }
         array_unshift($temp, $items[$i]);
     }
+
+    for ($i = 0; $i < $skip_previous; $i++)
+        array_unshift($temp, '..');
 
     return implode(DIRECTORY_SEPARATOR, $temp);
 }
