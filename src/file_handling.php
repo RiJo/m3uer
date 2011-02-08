@@ -17,13 +17,11 @@ function simplify_path($path) {
 
     $items = explode(DIRECTORY_SEPARATOR, $path);
     for ($i = count($items) - 1; $i >= 0 ; $i--) {
-        if ($items[$i] == ".")
+        if ($items[$i] === ".")
             continue;
-        if ($items[$i] == "..")
-        {
-            if ($i == 0)
-                die("Invalid path given: no parent of root directory");
-            $i--;
+        if ($items[$i] === ".." && $i > 0) {
+            if ($i > 1)
+                $i--;
             continue;
         }
         array_unshift($temp, $items[$i]);
