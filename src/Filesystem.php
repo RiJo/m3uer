@@ -33,12 +33,13 @@ class Filesystem {
         $key = array_shift($items);
         foreach ($nodes as $node) {
             if ($key == $node->text) {
-                $node->leaf = false;
                 $node->expanded = true;
                 return $this->add($node->children, $items, $relative_path.DIRECTORY_SEPARATOR.$key);
             }
         }
-        $new_file = new File(simplify_path($this->root_path.DIRECTORY_SEPARATOR.$relative_path.DIRECTORY_SEPARATOR.$key), $key);
+        $full_path = simplify_path($this->root_path.DIRECTORY_SEPARATOR.$relative_path.DIRECTORY_SEPARATOR.$key);
+        $new_file = new File($full_path, $key);
+        $new_file->leaf = !is_dir($full_path);
         $new_file->checked = $this->checkboxes ? false : 'undefined';
         array_push($nodes, $new_file);
 

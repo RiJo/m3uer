@@ -2,10 +2,12 @@
 
 /*
     TODO:
+    * Create an ignore-file-list (for dotfiles: .@__thumb)
+    * Not expand all nodes (only relevant ones)
     * icons depending on filetype
-    * sort according to filenames
-    * cannot handle single quote (see Fool's Garden)
+    * Order trees
     * error messages when something fails
+    * Show invalid paths in playlist
 */
 
 require_once('config.php');
@@ -20,11 +22,11 @@ function echo_header() {
     echo "\n<meta http-equiv='Content-Language' content='en' />";
 
     echo "\n<link rel='stylesheet' href='./style.css' type='text/css' />";
-    echo "\n<link rel=\"stylesheet\" type=\"text/css\" href=\"../ext/resources/css/ext-all.css\">";
+    echo "\n<link rel=\"stylesheet\" type=\"text/css\" href=\"".EXTJS_PATH."/resources/css/ext-all.css\">";
 
     // Ext.js
-    echo "\n<script type=\"text/javascript\" src=\"../ext/adapter/ext/ext-base.js\"></script>";
-    echo "\n<script type=\"text/javascript\" src=\"../ext/ext-all-debug.js\"></script>";
+    echo "\n<script type=\"text/javascript\" src=\"".EXTJS_PATH."/adapter/ext/ext-base.js\"></script>";
+    echo "\n<script type=\"text/javascript\" src=\"".EXTJS_PATH."/ext-all-debug.js\"></script>";
     echo "\n<script type=\"text/javascript\" src=\"Ext.js\"></script>";
 
     //echo "\n<script type=\"text/javascript\" src=\"check-tree-tristate.js\"></script>";
