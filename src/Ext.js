@@ -6,6 +6,29 @@ function render(root, playlist) {
         render_playlist(root, playlist);
 }
 
+function render_playlists(root) {
+    var tree = new Ext.tree.TreePanel({
+        renderTo: Ext.getBody(),
+        title: 'Playlists',
+        width: 700,
+        height: 500,
+        userArrows: true,
+        animate: true,
+        autoScroll: true,
+        dataUrl: 'data-playlists.php?root='+root,
+        root: {
+            nodeType: 'async',
+            text: root
+        },
+        listeners: {
+            render: function() {
+                this.getRootNode().expand();
+            },
+        }
+    });
+    
+}
+
 function render_playlist(root, playlist) {
     var tree = new Ext.tree.TreePanel({
         renderTo: Ext.getBody(),

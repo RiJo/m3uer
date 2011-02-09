@@ -36,17 +36,25 @@ test(simplify_path("../../../.."), "../../../..");
 test(simplify_path("../../../../.."), "../../../../..");
 
 echo "<br><b>make_relative_path()</b><br>";
-test(make_relative_path("foo.m3u", "bar.mp3"), "bar.mp3");
-test(make_relative_path("/foo/bar.m3u", "/foo/bar.mp3"), "bar.mp3");
-test(make_relative_path("/foo/bar.m3u", "/foo/bar.m3u"), "bar.m3u");
-test(make_relative_path("/foo/bar.m3u", ""), "../..");
-test(make_relative_path("", "foo/bar.mp3"), "foo/bar.mp3");
-test(make_relative_path("/foo/bar.m3u", "/foo/bar/baz.mp3"), "bar/baz.mp3");
-test(make_relative_path("/foo/bar/baz.m3u", "/foo/bar.mp3"), "../bar.mp3");
-test(make_relative_path("/foo/bar/baz.m3u", "/foo/baz/bar.mp3"), "../baz/bar.mp3");
+// Test relative to file
+test(make_relative_path("foo.m3u", "bar.mp3", true), "bar.mp3");
+test(make_relative_path("/foo/bar.m3u", "/foo/bar.mp3", true), "bar.mp3");
+test(make_relative_path("/foo/bar.m3u", "/foo/bar.m3u", true), "bar.m3u");
+test(make_relative_path("/foo/bar.m3u", "/", true), "..");
+test(make_relative_path("/", "/foo/bar.mp3", true), "foo/bar.mp3");
+test(make_relative_path("/foo/bar.m3u", "/foo/bar/baz.mp3", true), "bar/baz.mp3");
+test(make_relative_path("/foo/bar/baz.m3u", "/foo/bar.mp3", true), "../bar.mp3");
+test(make_relative_path("/foo/bar/baz.m3u", "/foo/baz/bar.mp3", true), "../baz/bar.mp3");
+// Test relative to directory
+test(make_relative_path("foo", "bar.mp3", false), "../bar.mp3");
+test(make_relative_path("/foo", "/foo/bar.mp3", false), "bar.mp3");
+test(make_relative_path("/foo/bar", "/foo/bar", false), "");
+test(make_relative_path("/foo/bar", "/", false), "../..");
+test(make_relative_path("/", "/foo/bar.mp3", false), "foo/bar.mp3");
+test(make_relative_path("/foo/bar/baz", "/foo/bar.mp3", false), "../../bar.mp3");
+test(make_relative_path("/foo/bar/baz", "/foo/baz/bar.mp3", false), "../../baz/bar.mp3");
 
-
-$root = '/home/rijo/programming/github/m3uer/src/';
+$root = '/home/rijo/programming/github/m3uer/src';
 $extensions = array(
     'playlists' => array('m3u'),
     'music' => array('wav', 'mp3')

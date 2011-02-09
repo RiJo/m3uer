@@ -15,11 +15,11 @@ define('APPLICATION_VERSION',       '0.1.0 unstable');
 define('LINE_BREAK',                chr(10));
 define('COMMENT_SYMBOL',            '#');
 
-define('SESSION_MUSIC',             'music');
+define('SESSION_MEDIA',             'media');
 define('SESSION_PLAYLISTS',         'playlists');
-define('SESSION_FILESYSTEM',              'tree');
+//define('SESSION_FILESYSTEM',              'tree');
 
 define('PLAYLIST_FORMATS',          'm3u');
-define('MEDIA_FORMATS',             'mp3');
+define('MEDIA_FORMATS',             'mp3,wav');
 
 ?>

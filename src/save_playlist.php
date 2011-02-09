@@ -21,6 +21,8 @@ if (isset($_GET['root']) && isset($_GET['path']) && isset($_POST['data'])) {
     $playlist_file_info = get_file_info($_GET['root'].DIRECTORY_SEPARATOR.$_GET['path']);
     $data = json_decode($_POST['data']);
 
+    //~ die("<pre>".print_r($data, true)."</pre>");
+
     $handle = fopen($playlist_file_info['path'], 'w')
         or die("Could not open file $playlist_file_info[path] for writing");
 

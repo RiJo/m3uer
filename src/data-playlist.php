@@ -43,10 +43,10 @@ function load_playlist($root, $playlist) {
     return $result;
 }
 
-if (isset($_GET['root']) && isset($_GET['path']) && isset($_SESSION[SESSION_FILESYSTEM])) {
+if (isset($_GET['root']) && isset($_GET['path']) && isset($_SESSION[SESSION_MEDIA])) {
     $root = $_GET['root'];
     $playlist = $_GET['path'];
-    $filesystem = unserialize($_SESSION[SESSION_FILESYSTEM]);
+    $filesystem = unserialize($_SESSION[SESSION_MEDIA]);
 
     if (!file_exists($playlist))
         die("Could not locate playlist \"$playlist\"");

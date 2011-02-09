@@ -2,8 +2,6 @@
 
 /*
     TODO:
-    * Expand node when checked
-
     * icons depending on filetype
     * sort according to filenames
     * cannot handle single quote (see Fool's Garden)
@@ -37,67 +35,44 @@ function echo_header() {
     echo "\n</head><body>";
 }
 
-function echo_footer() {
-    echo "\n</body></html>";
+function echo_body() {
+    echo "<a href=\"unit_tests.php\">Unit tests</a>";
+    echo "<div id='tree-div'></div>";
 }
 
-function echo_playlists($root, $playlists) {
-    echo "\n<h1>Playlists ($root)</h1>";
-    echo "\n<ul>";
-    foreach ($playlists as $playlist) {
-        echo "\n<li><a href='".basename($_SERVER['PHP_SELF'])."?playlist=$playlist'>$playlist</a></li>";
-    }
-    echo "\n</ul>";
+function echo_footer() {
+    echo "\n</body></html>";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 //   LOAD   ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-function load_filessytem($root, $extensions, $reload_session = false) {
-    if (!isset($_SESSION[SESSION_FILESYSTEM]) || $reload_session) {
-        $tree = new Filesystem();
-        $tree->load($root, $extensions);
+function load_global($force_reload = false) {
+    $extensions = array(
+        SESSION_PLAYLISTS   => explode(',', PLAYLIST_FORMATS),
+        SESSION_MEDIA       => explode(',', MEDIA_FORMATS),
+    );
 
-        $_SESSION[SESSION_FILESYSTEM] = serialize($tree);
-    }
-}
+    if (!isset($_SESSION[SESSION_PLAYLISTS]) || !isset($_SESSION[SESSION_MEDIA]) || $force_reload) {
+        $filesystem_trees = load_filesystem(ROOT_DIRECTORY, $extensions);
 
-function load_playlists($root, $extensions, $reload_session = false) {
-    $playlists = null;
-    if (!isset($_SESSION[SESSION_PLAYLISTS]) || $reload_session) {
-        $playlists = get_files($root, '.', $extensions);
-        // TODO: place this somewhere else?
-        for ($i = 0; $i < count($playlists); $i++)
-            $playlists[$i] = str_replace($root.DIRECTORY_SEPARATOR, '', $playlists[$i]);
-        $_SESSION[SESSION_PLAYLISTS] = serialize($playlists);
+        $playlist_tree = new Filesystem(ROOT_DIRECTORY, $filesystem_trees[SESSION_PLAYLISTS], false);
+        $media_tree = new Filesystem(ROOT_DIRECTORY, $filesystem_trees[SESSION_MEDIA], true);
+
+        $_SESSION[SESSION_PLAYLISTS] = serialize($playlist_tree);
+        $_SESSION[SESSION_MEDIA] = serialize($media_tree);
     }
-    else {
-        $playlists = unserialize($_SESSION[SESSION_PLAYLISTS]);
-    }
-    return $playlists;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 //   PRINTOUT   ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-load_filessytem(ROOT_DIRECTORY, explode(',', MEDIA_FORMATS));
+load_global(true);
 
 echo_header();
-
-if (isset($_GET['playlist']) && !empty($_GET['playlist'])) {
-    // foo
-    echo "<div id='tree-div'></div>";
-}
-else {
-    $playlists = load_playlists(ROOT_DIRECTORY, explode(',', PLAYLIST_FORMATS), true);
-    //~ echo "Playlists:<br><pre>".print_r($playlists, true)."</pre>";
-    echo_playlists(ROOT_DIRECTORY, $playlists);
-}
-
-echo "<a href=\"unit_tests.php\">Unit tests</a>";
-
+echo_body();
 echo_footer();
 
 ?>

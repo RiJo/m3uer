@@ -8,15 +8,13 @@ class File {
     public $iconCls = "";
     public $leaf = true;
     public $expanded = false;
-    public $checked = false;
+    public $checked = 'undefined';
     //public $uiProvider = 'tristate';
     public $children = array();
 
-    function  __construct($id,$text,$iconCls,$leaf) {
+    public function  __construct($id, $text) {
         $this->id = $id;
         $this->text = $text;
-        $this->iconCls = $iconCls;
-        $this->leaf = $leaf;
     }
 }
 
@@ -24,37 +22,28 @@ class Filesystem {
     private $root_path = '';
     private $nodes = array();
 
-    public function load($root_path, $extensions) {
+    public function  __construct($root_path, $files, $checkboxes = false) {
         $this->root_path = $root_path;
-        return $this->load_from_path($this->nodes, '.', $extensions);
+        $this->checkboxes = $checkboxes;
+        foreach ($files as $file)
+            $this->add($this->nodes, explode(DIRECTORY_SEPARATOR, $file));
     }
 
-    private function load_from_path(&$parent, $path, $extensions) {
-        $full_path = $this->root_path.DIRECTORY_SEPARATOR.$path;
-
-        if (!is_dir($full_path))
-            die("\"$full_path\" is not a directory");
-
-        $directory = opendir($full_path);
-        if (!$directory)
-            die("Could not open directory \"$full_path\"");
-
-        while (false !== ($file = readdir($directory))) {
-            $file_info = get_file_info($full_path.DIRECTORY_SEPARATOR.$file);
-
-            if (is_dir($file_info['path']) && !in_array($file, array('.', '..'))) {
-                // Directory
-                $new_directory = new File($file_info['path'], $file, "folder.png", false);
-                array_push($parent, $new_directory);
-                $this->load_from_path($new_directory->children, $path.DIRECTORY_SEPARATOR.$file, $extensions);
-            }
-            elseif (isset($file_info['extension']) && in_array($file_info['extension'], $extensions)) {
-                // File
-                $new_file = new File($file_info['path'], $file, "file.png", true);
-                array_push($parent, $new_file);
+    private function add(&$nodes, $items, $relative_path = '.') {
+        $key = array_shift($items);
+        foreach ($nodes as $node) {
+            if ($key == $node->text) {
+                $node->leaf = false;
+                $node->expanded = true;
+                return $this->add($node->children, $items, $relative_path.DIRECTORY_SEPARATOR.$key);
             }
         }
-        closedir($directory);
+        $new_file = new File(simplify_path($this->root_path.DIRECTORY_SEPARATOR.$relative_path.DIRECTORY_SEPARATOR.$key), $key);
+        $new_file->checked = $this->checkboxes ? false : 'undefined';
+        array_push($nodes, $new_file);
+
+        if (count($items) > 0)
+            return $this->add($new_file->children, $items, $relative_path.DIRECTORY_SEPARATOR.$key);
     }
 
     public function check_paths($paths) {
@@ -94,41 +83,9 @@ class Filesystem {
         return true;
     }
 
-    public function get_paths($extensions) {
-        
-    }
-
     public function to_json() {
         return json_encode($this->nodes);
     }
 }
-
-/*
-
-in = {
-    playlists   => array('m3u'),
-    music       => array('mp3', 'wav')
-}
-
-out = {
-    playlists   => array(
-        foo => array (
-            bar.m3u
-            baz => array(
-                hej.m3u,
-                da.m3u
-            )
-        )
-    )
-    music       => array(
-        foo => array (
-            abc.mp3,
-            def.mp3,
-            ghi.mp3
-        )
-    )
-}
-
-*/
 
 ?>

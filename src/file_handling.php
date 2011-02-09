@@ -37,20 +37,21 @@ function simplify_path($path) {
     return implode(DIRECTORY_SEPARATOR, $temp);
 }
 
-function make_relative_path($source, $destination) {
+function make_relative_path($source, $destination, $is_file = true) {
     $source_directories = explode(DIRECTORY_SEPARATOR, $source);
     $destination_directories = explode(DIRECTORY_SEPARATOR, $destination);
 
     $branch = 0;
-    for ($i = 0; $i < count($source_directories) - 1 && $i < count($destination_directories) - 1; $i++) {
+    for ($i = 0; $i < count($source_directories) - $is_file && $i < count($destination_directories) - $is_file; $i++) {
         if ($source_directories[$i] != $destination_directories[$i])
             break;
         $branch = $i + 1;
     }
 
     $temp = array();
-    for ($i = $branch; $i < count($source_directories) - 1; $i++) {
-        array_push($temp, '..');
+    for ($i = $branch; $i < count($source_directories) - $is_file; $i++) {
+        if ($source_directories[$i] != '')
+            array_push($temp, '..');
     }
     for ($i = $branch; $i < count($destination_directories); $i++) {
         if ($destination_directories[$i] != '')
@@ -116,7 +117,7 @@ function load_filesystem_recursive($root_path, $relative_path, $extensions, &$tr
             // Directory
             if (!in_array($file, array('.', '..'))) {
                 foreach ($extensions as $key=>$value)
-                    array_push($tree[$key], make_relative_path($root_path, $file_info['path']));
+                    array_push($tree[$key], make_relative_path($root_path, $file_info['path'], false));
                 load_filesystem_recursive($root_path, $relative_path.DIRECTORY_SEPARATOR.$file, $extensions, $tree);
             }
         }
@@ -124,7 +125,7 @@ function load_filesystem_recursive($root_path, $relative_path, $extensions, &$tr
             // File
             foreach ($extensions as $key=>$value) {
                 if (in_array($file_info['extension'], $value))
-                    array_push($tree[$key], make_relative_path($root_path, $file_info['path']));
+                    array_push($tree[$key], make_relative_path($root_path, $file_info['path'], false));
             }
         }
     }
