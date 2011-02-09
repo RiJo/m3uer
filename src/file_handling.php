@@ -37,6 +37,28 @@ function simplify_path($path) {
     return implode(DIRECTORY_SEPARATOR, $temp);
 }
 
+function make_relative_path($source, $destination) {
+    $source_directories = explode(DIRECTORY_SEPARATOR, $source);
+    $destination_directories = explode(DIRECTORY_SEPARATOR, $destination);
+
+    $branch = 0;
+    for ($i = 0; $i < count($source_directories) - 1 && $i < count($destination_directories) - 1; $i++) {
+        if ($source_directories[$i] != $destination_directories[$i])
+            break;
+        $branch = $i + 1;
+    }
+
+    $temp = array();
+    for ($i = $branch; $i < count($source_directories) - 1; $i++) {
+        array_push($temp, '..');
+    }
+    for ($i = $branch; $i < count($destination_directories); $i++) {
+        if ($destination_directories[$i] != '')
+            array_push($temp, $destination_directories[$i]);
+    }
+    return implode(DIRECTORY_SEPARATOR, $temp);
+}
+
 // TODO: reuse when loading tree-structure..
 function get_files($root, $relative_path, $extensions, $directories = false) {
     $full_path = $root.DIRECTORY_SEPARATOR.$relative_path;
@@ -66,6 +88,47 @@ function get_files($root, $relative_path, $extensions, $directories = false) {
     closedir($directory);
 
     return $files;
+}
+
+function load_filesystem($root_path, $extensions) {
+    $result = array();
+    foreach ($extensions as $key=>$value)
+        $result[$key] = array();
+    
+    load_filesystem_recursive($root_path, '.', $extensions, $result);
+    return $result;
+}
+
+function load_filesystem_recursive($root_path, $relative_path, $extensions, &$tree) {
+    $full_path = $root_path.DIRECTORY_SEPARATOR.$relative_path;
+
+    if (!is_dir($full_path))
+        die("\"$full_path\" is not a directory");
+
+    $directory = opendir($full_path);
+    if (!$directory)
+        die("Could not open directory \"$full_path\"");
+
+    while (false !== ($file = readdir($directory))) {
+        $file_info = get_file_info($full_path.DIRECTORY_SEPARATOR.$file);
+
+        if (is_dir($file_info['path'])) {
+            // Directory
+            if (!in_array($file, array('.', '..'))) {
+                foreach ($extensions as $key=>$value)
+                    array_push($tree[$key], make_relative_path($root_path, $file_info['path']));
+                load_filesystem_recursive($root_path, $relative_path.DIRECTORY_SEPARATOR.$file, $extensions, $tree);
+            }
+        }
+        elseif (isset($file_info['extension'])) {
+            // File
+            foreach ($extensions as $key=>$value) {
+                if (in_array($file_info['extension'], $value))
+                    array_push($tree[$key], make_relative_path($root_path, $file_info['path']));
+            }
+        }
+    }
+    closedir($directory);
 }
 
 ?>

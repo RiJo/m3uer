@@ -103,4 +103,32 @@ class Filesystem {
     }
 }
 
+/*
+
+in = {
+    playlists   => array('m3u'),
+    music       => array('mp3', 'wav')
+}
+
+out = {
+    playlists   => array(
+        foo => array (
+            bar.m3u
+            baz => array(
+                hej.m3u,
+                da.m3u
+            )
+        )
+    )
+    music       => array(
+        foo => array (
+            abc.mp3,
+            def.mp3,
+            ghi.mp3
+        )
+    )
+}
+
+*/
+
 ?>

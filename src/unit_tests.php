@@ -22,7 +22,7 @@ function test($actual, $reference) {
     $test_number++;
 }
 
-echo "<b>simplify_path()</b><br>";
+echo "<br><b>simplify_path()</b><br>";
 test(simplify_path("/foo/bar/baz"), "/foo/bar/baz");
 test(simplify_path("./foo/bar/baz"), "foo/bar/baz");
 test(simplify_path("../foo/bar/baz"), "../foo/bar/baz");
@@ -35,7 +35,24 @@ test(simplify_path("././././."), "");
 test(simplify_path("../../../.."), "../../../..");
 test(simplify_path("../../../../.."), "../../../../..");
 
+echo "<br><b>make_relative_path()</b><br>";
+test(make_relative_path("foo.m3u", "bar.mp3"), "bar.mp3");
+test(make_relative_path("/foo/bar.m3u", "/foo/bar.mp3"), "bar.mp3");
+test(make_relative_path("/foo/bar.m3u", "/foo/bar.m3u"), "bar.m3u");
+test(make_relative_path("/foo/bar.m3u", ""), "../..");
+test(make_relative_path("", "foo/bar.mp3"), "foo/bar.mp3");
+test(make_relative_path("/foo/bar.m3u", "/foo/bar/baz.mp3"), "bar/baz.mp3");
+test(make_relative_path("/foo/bar/baz.m3u", "/foo/bar.mp3"), "../bar.mp3");
+test(make_relative_path("/foo/bar/baz.m3u", "/foo/baz/bar.mp3"), "../baz/bar.mp3");
 
+
+$root = '/home/rijo/programming/github/m3uer/src/';
+$extensions = array(
+    'playlists' => array('m3u'),
+    'music' => array('wav', 'mp3')
+);
+$tree = load_filesystem($root, $extensions);
+echo "<pre>".print_r($tree, true)."</pre>";
 
 echo "<br><br><b>".($passed_all ? "<font color=\"#009900\">All tests passed!</font>" : "<font color=\"#990000\">Did not pass all tests!</font>")."</b>";
 

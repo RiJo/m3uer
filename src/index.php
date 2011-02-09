@@ -82,7 +82,7 @@ function load_playlists($root, $extensions, $reload_session = false) {
 //   PRINTOUT   ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-load_filessytem(ROOT_DIRECTORY, explode(',', MEDIA_FORMATS), true);
+load_filessytem(ROOT_DIRECTORY, explode(',', MEDIA_FORMATS));
 
 echo_header();
 
@@ -91,7 +91,7 @@ if (isset($_GET['playlist']) && !empty($_GET['playlist'])) {
     echo "<div id='tree-div'></div>";
 }
 else {
-    $playlists = load_playlists(ROOT_DIRECTORY, explode(',', PLAYLIST_FORMATS));
+    $playlists = load_playlists(ROOT_DIRECTORY, explode(',', PLAYLIST_FORMATS), true);
     //~ echo "Playlists:<br><pre>".print_r($playlists, true)."</pre>";
     echo_playlists(ROOT_DIRECTORY, $playlists);
 }

@@ -7,11 +7,13 @@ require_once('Filesystem.php');
 function load_playlist($root, $playlist) {
     $playlist_file_info = get_file_info($root.DIRECTORY_SEPARATOR.$playlist);
 
-    $handle = fopen($playlist_file_info['path'], 'r')
-        or die("Error: could not open file '$playlist_file_info[path]' for reading");
-
-    $contents = fread($handle, filesize($playlist_file_info['path']));
-    fclose($handle);
+    $contents = "";
+    if (filesize($playlist_file_info['path']) > 0) {
+        $handle = fopen($playlist_file_info['path'], 'r')
+            or die("Error: could not open file '$playlist_file_info[path]' for reading");
+        $contents = fread($handle, filesize($playlist_file_info['path']));
+        fclose($handle);
+    }
 
     $result = array(
         'valid' => array(),
