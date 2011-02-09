@@ -7,13 +7,26 @@ function render(root, playlist) {
 }
 
 function render_playlists(root) {
+    var ctxMenu = new Ext.menu.Menu({
+        id:'contextMenu',
+        items: [
+            {
+                id: 'add',
+                handler: function() {
+                    alert('add code goes here...');
+                },
+                text:'Add playlist'
+            }
+        ]
+    });
+
     var tree = new Ext.tree.TreePanel({
         renderTo: Ext.getBody(),
         title: 'Playlists',
         width: 700,
         height: 500,
         userArrows: true,
-        animate: true,
+        animate: false,
         autoScroll: true,
         dataUrl: 'data-playlists.php?root='+root,
         root: {
@@ -24,14 +37,16 @@ function render_playlists(root) {
             'render': function() {
                 this.getRootNode().expand();
             },
-            'dblclick': function(n, e)  {
-                if (n.isLeaf()) {
-                    window.location = 'index.php?root='+root+'&playlist='+n.id;
+            'dblclick': function(node, e)  {
+                if (node.isLeaf()) {
+                    window.location = 'index.php?root='+root+'&playlist='+node.id;
                 }
+            },
+            'contextmenu': function(node, e) {
+                ctxMenu.show(node.ui.getAnchor()); 
             }
         }
     });
-    
 }
 
 function render_playlist(root, playlist) {
@@ -41,7 +56,7 @@ function render_playlist(root, playlist) {
         width: 700,
         height: 500,
         userArrows: true,
-        animate: true,
+        animate: false,
         autoScroll: true,
         dataUrl: 'data-playlist.php?root='+root+'&path='+playlist,
         root: {
@@ -61,10 +76,10 @@ function render_playlist(root, playlist) {
                     node.getUI().removeClass('complete');
                 }
             }*/
-            'checkchange': function(n, checked) {
-                n.expand();
-                n.expandChildNodes(true);
-                n.eachChild(function(child){
+            'checkchange': function(node, checked) {
+                node.expand();
+                node.expandChildNodes(true);
+                node.eachChild(function(child){
                     child.ui.toggleCheck(checked);
                 });
             }

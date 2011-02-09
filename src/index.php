@@ -2,12 +2,26 @@
 
 /*
     TODO:
+    * Add license (GPL3) because of extjs
+    * do a CREDO check before calling program stable
     * Create an ignore-file-list (for dotfiles: .@__thumb)
     * Not expand all nodes (only relevant ones)
     * icons depending on filetype
     * Order trees
     * error messages when something fails
     * Show invalid paths in playlist
+    * Make filenames consistent: rename Ext.js, fix dashes
+    * Whu use a treeloader?
+            var tree = new Tree.TreePanel({
+                el:'tree-div',
+                useArrows:true,
+                autoScroll:true,
+                animate:true,        
+                containerScroll: true, 
+                loader: new Tree.TreeLoader({
+                    dataUrl:'fetchTreeData.php'
+                })        
+            }); 
 */
 
 require_once('config.php');
@@ -71,7 +85,7 @@ function load_global($force_reload = false) {
 //   PRINTOUT   ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-load_global();
+load_global(true);
 
 echo_header();
 echo_body();
