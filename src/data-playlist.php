@@ -5,7 +5,7 @@ require_once('file_handling.php');
 require_once('Filesystem.php');
 
 function load_playlist($root, $playlist) {
-    $playlist_file_info = get_file_info($root.DIRECTORY_SEPARATOR.$playlist);
+    $playlist_file_info = get_file_info($playlist);
 
     $contents = "";
     if (filesize($playlist_file_info['path']) > 0) {

@@ -21,9 +21,14 @@ function render_playlists(root) {
             text: root
         },
         listeners: {
-            render: function() {
+            'render': function() {
                 this.getRootNode().expand();
             },
+            'dblclick': function(n, e)  {
+                if (n.isLeaf()) {
+                    window.location = 'index.php?root='+root+'&playlist='+n.id;
+                }
+            }
         }
     });
     
@@ -44,7 +49,7 @@ function render_playlist(root, playlist) {
             text: root
         },
         listeners: {
-            render: function() {
+            'render': function() {
                 this.getRootNode().expand();
             },
 /*            checkchange: function(node, checked) {
@@ -56,7 +61,7 @@ function render_playlist(root, playlist) {
                     node.getUI().removeClass('complete');
                 }
             }*/
-            checkchange: function(n, checked) {
+            'checkchange': function(n, checked) {
                 n.expand();
                 n.expandChildNodes(true);
                 n.eachChild(function(child){
