@@ -1,4 +1,7 @@
 
+// Global variable to be used in context menus
+var currentNode = '';
+
 function render(root, playlist) {
     if (playlist == '')
         render_playlists(root);
@@ -8,7 +11,6 @@ function render(root, playlist) {
 
 function render_playlists(root) {
     var ctxMenu = new Ext.menu.Menu({
-        node: '',
         id: 'ctxMenuDirectory',
         items: [
             {
@@ -16,15 +18,16 @@ function render_playlists(root) {
                 handler: function() {
                     var playlist_name = prompt("Enter the name of the new playlist","My playlist");
                     Ext.Ajax.request({
-                        url: 'new_playlist.php?root='+'hejsan'+'&name='+playlist_name+'.m3u',
+                        url: 'new_playlist.php?root='+root+'&path='+currentNode.id+'&name='+playlist_name,
                         success: function(response, opts) {
                             Ext.Msg.show({
-                                title: 'Playlist saved', 
+                                title: 'Create playlist', 
                                 msg: response.responseText,
                                 icon: Ext.Msg.INFO,
                                 minWidth: 200,
                                 buttons: Ext.Msg.OK
                             });
+                            window.location = 'index.php';
                         },
                         failure: function(response, opts) {
                             alert("Could not create playlist: "+response.responseText);
@@ -46,6 +49,7 @@ function render_playlists(root) {
         autoScroll: true,
         dataUrl: 'data_playlists.php?root='+root,
         root: {
+            id: root,
             nodeType: 'async',
             text: root
         },
@@ -60,7 +64,7 @@ function render_playlists(root) {
             },
             'contextmenu': function(node, e) {
                 if (!node.isLeaf()) {
-                    ctxMenu.node = node;
+                    currentNode = node;
                     ctxMenu.show(node.ui.getAnchor()); 
                 }
             }
@@ -79,6 +83,7 @@ function render_playlist(root, playlist) {
         autoScroll: true,
         dataUrl: 'data_playlist.php?root='+root+'&path='+playlist,
         root: {
+            id: root,
             nodeType: 'async',
             text: root
         },

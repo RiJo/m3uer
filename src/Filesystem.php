@@ -25,16 +25,23 @@ class Filesystem {
     public function  __construct($root_path, $files, $checkboxes = false) {
         $this->root_path = $root_path;
         $this->checkboxes = $checkboxes;
+        $this->add($files);
+    }
+    
+    public function add($files) {
+        if (!is_array($files))
+            $files = array($files);
+
         foreach ($files as $file)
-            $this->add($this->nodes, explode(DIRECTORY_SEPARATOR, $file));
+            $this->add_recursive($this->nodes, explode(DIRECTORY_SEPARATOR, $file));
     }
 
-    private function add(&$nodes, $items, $relative_path = '.') {
+    private function add_recursive(&$nodes, $items, $relative_path = '.') {
         $key = array_shift($items);
         foreach ($nodes as $node) {
             if ($key == $node->text) {
                 $node->expanded = true;
-                return $this->add($node->children, $items, $relative_path.DIRECTORY_SEPARATOR.$key);
+                return $this->add_recursive($node->children, $items, $relative_path.DIRECTORY_SEPARATOR.$key);
             }
         }
         $full_path = simplify_path($this->root_path.DIRECTORY_SEPARATOR.$relative_path.DIRECTORY_SEPARATOR.$key);
@@ -44,7 +51,7 @@ class Filesystem {
         array_push($nodes, $new_file);
 
         if (count($items) > 0)
-            return $this->add($new_file->children, $items, $relative_path.DIRECTORY_SEPARATOR.$key);
+            return $this->add_recursive($new_file->children, $items, $relative_path.DIRECTORY_SEPARATOR.$key);
     }
 
     public function check_paths($paths) {

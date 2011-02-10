@@ -1,6 +1,8 @@
 <?php
 
 function get_file_info($path) {
+    if (!file_exists($path))
+        die("Could not locate file $path");
     $real_path = realpath($path);
     $file_info = pathinfo($real_path);
     //~ $file_info['path'] = $path;
