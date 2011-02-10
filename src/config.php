@@ -20,6 +20,7 @@ define('SESSION_MEDIA',             'media');
 define('SESSION_PLAYLISTS',         'playlists');
 //define('SESSION_FILESYSTEM',              'tree');
 
+define('SKIP_FILE_PATTERNS',        '(^\.)');
 define('PLAYLIST_FORMATS',          'm3u');
 define('MEDIA_FORMATS',             'mp3,wav');
 

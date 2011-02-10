@@ -69,9 +69,10 @@ function load_global($force_reload = false) {
         SESSION_PLAYLISTS   => explode(',', PLAYLIST_FORMATS),
         SESSION_MEDIA       => explode(',', MEDIA_FORMATS),
     );
+    $skip_patterns = (SKIP_FILE_PATTERNS == '') ? array() : explode(',', SKIP_FILE_PATTERNS);
 
     if (!isset($_SESSION[SESSION_PLAYLISTS]) || !isset($_SESSION[SESSION_MEDIA]) || $force_reload) {
-        $filesystem_trees = load_filesystem(ROOT_DIRECTORY, $extensions);
+        $filesystem_trees = load_filesystem(ROOT_DIRECTORY, $extensions, $skip_patterns);
 
         $playlist_tree = new Filesystem(ROOT_DIRECTORY, $filesystem_trees[SESSION_PLAYLISTS], false);
         $media_tree = new Filesystem(ROOT_DIRECTORY, $filesystem_trees[SESSION_MEDIA], true);
