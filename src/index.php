@@ -41,7 +41,7 @@ function echo_header() {
     // Ext.js
     echo "\n<script type=\"text/javascript\" src=\"".EXTJS_PATH."/adapter/ext/ext-base.js\"></script>";
     echo "\n<script type=\"text/javascript\" src=\"".EXTJS_PATH."/ext-all-debug.js\"></script>";
-    echo "\n<script type=\"text/javascript\" src=\"Ext.js\"></script>";
+    echo "\n<script type=\"text/javascript\" src=\"playlist-tree.js\"></script>";
 
     //echo "\n<script type=\"text/javascript\" src=\"check-tree-tristate.js\"></script>";
 
