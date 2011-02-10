@@ -10,31 +10,51 @@ function render(root, playlist) {
 }
 
 function render_playlists(root) {
-    var ctxMenu = new Ext.menu.Menu({
-        id: 'ctxMenuDirectory',
+    var ctxDirectory = new Ext.menu.Menu({
+        id: 'ctxDirectory',
         items: [
             {
                 id: 'add',
+                text:'Add new playlist',
                 handler: function() {
                     var playlist_name = prompt("Enter the name of the new playlist","My playlist");
                     Ext.Ajax.request({
                         url: 'new_playlist.php?root='+root+'&path='+currentNode.id+'&name='+playlist_name,
                         success: function(response, opts) {
                             Ext.Msg.show({
-                                title: 'Create playlist', 
+                                title: 'Create playlist',
                                 msg: response.responseText,
                                 icon: Ext.Msg.INFO,
                                 minWidth: 200,
-                                buttons: Ext.Msg.OK
+                                buttons: Ext.Msg.OK,
                             });
-                            window.location = 'index.php';
+                            tree.root.reload();
                         },
                         failure: function(response, opts) {
                             alert("Could not create playlist: "+response.responseText);
                         }
                     });
-                },
-                text:'Add playlist'
+                }
+            }
+        ]
+    });
+
+    var ctxFile = new Ext.menu.Menu({
+        id: 'ctxFile',
+        items: [
+            {
+                id: 'edit',
+                text:'Edit playlist',
+                handler: function() {
+                    window.location = 'index.php?root='+root+'&playlist='+currentNode.id;
+                }
+            },
+            {
+                id: 'delete',
+                text:'Delete playlist',
+                handler: function() {
+                    alert('DELETE');
+                }
             }
         ]
     });
@@ -63,9 +83,12 @@ function render_playlists(root) {
                 }
             },
             'contextmenu': function(node, e) {
-                if (!node.isLeaf()) {
-                    currentNode = node;
-                    ctxMenu.show(node.ui.getAnchor()); 
+                currentNode = node;
+                if (node.isLeaf()) {
+                    ctxFile.show(node.ui.getAnchor());
+                }
+                else {
+                    ctxDirectory.show(node.ui.getAnchor());
                 }
             }
         }
