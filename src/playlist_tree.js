@@ -44,7 +44,7 @@ function render_playlists(root) {
         userArrows: true,
         animate: false,
         autoScroll: true,
-        dataUrl: 'data-playlists.php?root='+root,
+        dataUrl: 'data_playlists.php?root='+root,
         root: {
             nodeType: 'async',
             text: root
@@ -77,7 +77,7 @@ function render_playlist(root, playlist) {
         userArrows: true,
         animate: false,
         autoScroll: true,
-        dataUrl: 'data-playlist.php?root='+root+'&path='+playlist,
+        dataUrl: 'data_playlist.php?root='+root+'&path='+playlist,
         root: {
             nodeType: 'async',
             text: root
