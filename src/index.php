@@ -52,7 +52,7 @@ function echo_header() {
 }
 
 function echo_body() {
-    echo "<a href=\"unit_tests.php\">Unit tests</a>";
+    //echo "<a href=\"unit_tests.php\">Unit tests</a>";
     echo "<div id='tree-div'></div>";
 }
 

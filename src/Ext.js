@@ -8,12 +8,28 @@ function render(root, playlist) {
 
 function render_playlists(root) {
     var ctxMenu = new Ext.menu.Menu({
-        id:'contextMenu',
+        node: '',
+        id: 'ctxMenuDirectory',
         items: [
             {
                 id: 'add',
                 handler: function() {
-                    alert('add code goes here...');
+                    var playlist_name = prompt("Enter the name of the new playlist","My playlist");
+                    Ext.Ajax.request({
+                        url: 'new_playlist.php?root='+'hejsan'+'&name='+playlist_name+'.m3u',
+                        success: function(response, opts) {
+                            Ext.Msg.show({
+                                title: 'Playlist saved', 
+                                msg: response.responseText,
+                                icon: Ext.Msg.INFO,
+                                minWidth: 200,
+                                buttons: Ext.Msg.OK
+                            });
+                        },
+                        failure: function(response, opts) {
+                            alert("Could not create playlist: "+response.responseText);
+                        }
+                    });
                 },
                 text:'Add playlist'
             }
@@ -43,7 +59,10 @@ function render_playlists(root) {
                 }
             },
             'contextmenu': function(node, e) {
-                ctxMenu.show(node.ui.getAnchor()); 
+                if (!node.isLeaf()) {
+                    ctxMenu.node = node;
+                    ctxMenu.show(node.ui.getAnchor()); 
+                }
             }
         }
     });
@@ -110,7 +129,6 @@ function render_playlist(root, playlist) {
                     }
                     msg += node.id;
                 });
-                // Basic request in Ext
                 Ext.Ajax.request({
                     url: 'save_playlist.php?root='+root+'&path='+playlist,
                     params: { data: Ext.encode(msg.split(',')) },
@@ -127,10 +145,10 @@ function render_playlist(root, playlist) {
                             minWidth: 200,
                             buttons: Ext.Msg.OK
                         });
+                    },
+                    failure: function(response, opts) {
+                        alert("Could not save playlist: "+response.responseText);
                     }
-                    //failure: function(response, opts) {
-                        // nop
-                    //}
                 });
             }
         }]
