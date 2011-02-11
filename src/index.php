@@ -2,7 +2,7 @@
 
 /*
     TODO:
-    * Add license (GPL3) because of extjs
+    * What happens if notihng is selected when saving playlist?
     * do a CREDO check before calling program stable
     * Create an ignore-file-list (for dotfiles: .@__thumb)
     * Not expand all nodes (only relevant ones)

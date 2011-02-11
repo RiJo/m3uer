@@ -19,7 +19,19 @@ function playlist_contents($playlist_path, $data) {
 
 if (isset($_GET['root']) && isset($_GET['path']) && isset($_POST['data'])) {
     $playlist_file_info = get_file_info($_GET['path']);
-    $data = json_decode($_POST['data']);
+
+    // Reference: http://stackoverflow.com/questions/689185/json-decode-returns-null-php
+    if (get_magic_quotes_gpc()) {
+        // Remove PHP magic quotes 
+        $data = stripslashes($_POST['data']);
+    }
+    else {
+        $data = $_POST['data'];
+    }
+    $data = json_decode($data, true);
+
+    if ($data == null)
+        die("Could not parse json data:<br><br>$_POST[data]");
 
     //~ die("<pre>".print_r($data, true)."</pre>");
 

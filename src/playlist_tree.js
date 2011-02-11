@@ -17,21 +17,26 @@ function render_playlists(root) {
                 id: 'add',
                 text:'Add new playlist',
                 handler: function() {
-                    var playlist_name = prompt("Enter the name of the new playlist","My playlist");
-                    Ext.Ajax.request({
-                        url: 'new_playlist.php?root='+root+'&path='+currentNode.id+'&name='+playlist_name,
-                        success: function(response, opts) {
-                            Ext.Msg.show({
-                                title: 'Create playlist',
-                                msg: response.responseText,
-                                icon: Ext.Msg.INFO,
-                                minWidth: 200,
-                                buttons: Ext.Msg.OK,
+                    // Prompt for playlist name
+                    Ext.Msg.prompt('Create new playlist', 'Enter the name of the new playlist', function(btn, text) {
+                        if (btn == 'ok'){
+                            // Create playlist
+                            Ext.Ajax.request({
+                                url: 'new_playlist.php?root='+root+'&path='+currentNode.id+'&name='+text,
+                                success: function(response, opts) {
+                                    Ext.Msg.show({
+                                        title: 'Create new playlist',
+                                        msg: response.responseText,
+                                        icon: Ext.Msg.INFO,
+                                        minWidth: 200,
+                                        buttons: Ext.Msg.OK,
+                                    });
+                                    tree.root.reload();
+                                },
+                                failure: function(response, opts) {
+                                    alert("Could not create playlist: "+response.responseText);
+                                }
                             });
-                            tree.root.reload();
-                        },
-                        failure: function(response, opts) {
-                            alert("Could not create playlist: "+response.responseText);
                         }
                     });
                 }
@@ -132,11 +137,11 @@ function render_playlist(root, playlist) {
             }
         },
         buttons: [{
-            text: 'Cancel',
+            text: 'Back',
             handler: function() {
                 Ext.Msg.show({
-                    title: 'Cancel',
-                    msg: 'Are you sure you want to cancel?',
+                    title: 'Back to playlists',
+                    msg: 'Are you sure you want to go back?',
                     buttons: Ext.Msg.YESNO,
                     icon: Ext.MessageBox.QUESTION,
                     fn: function(response) {
