@@ -3,6 +3,8 @@
 /*
     TODO:
     * What happens if nothing is selected when saving playlist?
+    * Button to reload filesystem
+    * Loading indication while loading filesystem
     * do a CREDO check before calling program stable
         * C - done
         * R - done
