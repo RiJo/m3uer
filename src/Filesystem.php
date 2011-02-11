@@ -9,7 +9,6 @@ class File {
     public $leaf = true;
     public $expanded = false;
     public $checked = 'undefined';
-    //public $uiProvider = 'tristate';
     public $children = array();
 
     public function  __construct($id, $text) {
@@ -40,7 +39,7 @@ class Filesystem {
         $key = array_shift($items);
         foreach ($nodes as $node) {
             if ($key == $node->text) {
-                $node->expanded = true;
+                //$node->expanded = true;
                 return $this->add_recursive($node->children, $items, $relative_path.DIRECTORY_SEPARATOR.$key);
             }
         }

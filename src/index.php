@@ -2,9 +2,15 @@
 
 /*
     TODO:
-    * What happens if notihng is selected when saving playlist?
+    * What happens if nothing is selected when saving playlist?
     * do a CREDO check before calling program stable
+        * C - done
+        * R - done
+        * E - done
+        * D - 
+        * O - done
     * Create an ignore-file-list (for dotfiles: .@__thumb)
+    * Parent node is not checked on load when all childs are checked
     * Not expand all nodes (only relevant ones)
     * icons depending on filetype
     * Order trees
