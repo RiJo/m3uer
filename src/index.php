@@ -19,17 +19,6 @@
     * error messages when something fails
     * Show invalid paths in playlist
     * Make filenames consistent: rename Ext.js, fix dashes
-    * Whu use a treeloader?
-            var tree = new Tree.TreePanel({
-                el:'tree-div',
-                useArrows:true,
-                autoScroll:true,
-                animate:true,        
-                containerScroll: true, 
-                loader: new Tree.TreeLoader({
-                    dataUrl:'fetchTreeData.php'
-                })        
-            }); 
 */
 
 require_once('config.php');

@@ -72,7 +72,9 @@ function render_playlists(root) {
         userArrows: true,
         animate: false,
         autoScroll: true,
-        dataUrl: 'data_playlists.php?root='+root,
+        loader: new Ext.tree.TreeLoader({
+            dataUrl: 'data_playlists.php?root='+root
+        }),
         root: {
             id: root,
             nodeType: 'async',
@@ -109,7 +111,9 @@ function render_playlist(root, playlist) {
         userArrows: true,
         animate: false,
         autoScroll: true,
-        dataUrl: 'data_playlist.php?root='+root+'&path='+playlist,
+        loader: new Ext.tree.TreeLoader({
+            dataUrl: 'data_playlist.php?root='+root+'&path='+playlist
+        }),
         root: {
             id: root,
             nodeType: 'async',
