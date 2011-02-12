@@ -101,13 +101,6 @@ class Filesystem {
         return $invalid;
     }
 
-    /*public function check_path($path) {
-        /*if (strpos($path, $this->root_path) !== 0)
-            return false;
-        $stripped_path = substr($path, strlen($this->root_path) + strlen(DIRECTORY_SEPARATOR));
-        return $this->valid_path(explode(DIRECTORY_SEPARATOR, $stripped_path));
-    }*/
-
     private function check_recursive(&$nodes, $items, $relative_path = '.') {
         if (count($items) == 0)
             return true;
@@ -126,28 +119,6 @@ class Filesystem {
         }
 
         return false;
-    }
-
-    private function valid_path($path) {
-        $current_node = &$this->nodes;
-        $current_file;
-        $node_found;
-        foreach ($path as $node_name) {
-            $node_found = false;
-            foreach ($current_node as $file) {
-                if ($file->text == $node_name) {
-                    $node_found = true;
-                    $current_file = &$file;
-                    //$current_file->expanded = true; // TODO: only do this on valid paths
-                    $current_node = &$file->children;
-                    break;
-                }
-            }
-            if (!$node_found)
-                return false;
-        }
-        $current_file->checked = true;
-        return true;
     }
 
     public function to_json() {

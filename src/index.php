@@ -73,13 +73,13 @@ function echo_footer() {
 ////////////////////////////////////////////////////////////////////////////////
 
 function load_global($force_reload = false) {
-    $extensions = array(
-        SESSION_PLAYLISTS   => explode(',', PLAYLIST_FORMATS),
-        SESSION_MEDIA       => explode(',', MEDIA_FORMATS),
-    );
-    $skip_patterns = (SKIP_FILE_PATTERNS == '') ? array() : explode(',', SKIP_FILE_PATTERNS);
-
     if (!isset($_SESSION[SESSION_PLAYLISTS]) || !isset($_SESSION[SESSION_MEDIA]) || $force_reload) {
+        // Load filesystem
+        $extensions = array(
+            SESSION_PLAYLISTS => explode(',', PLAYLIST_FORMATS),
+            SESSION_MEDIA => explode(',', MEDIA_FORMATS),
+        );
+        $skip_patterns = (SKIP_FILE_PATTERNS == '') ? array() : explode(',', SKIP_FILE_PATTERNS);
         $filesystem_trees = load_filesystem(ROOT_DIRECTORY, $extensions, $skip_patterns);
 
         // Build playlists tree
