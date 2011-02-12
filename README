@@ -15,11 +15,12 @@
 --------------------------------------------------------------------------------
  version 0.1.0, xxxx-xx-xx
 --------------------------------------------------------------------------------
+    * File config.php for easy setup
     * Tree view of playlists
     * Tree view of media files in given playlist
-    * 
+    * Add new playlist
+    * Select media files of playlist
 --------------------------------------------------------------------------------
 
  TODO:
-    * Add new playlist
     * Delete playlist

@@ -8,8 +8,11 @@ if(!isset($_SESSION))
 define('APPLICATION_NAME',          'm3uer');
 define('APPLICATION_VERSION',       '0.1.0');
 
+// Ext JS
 define('EXTJS_PATH',                '../ext');
+define('EXTJS_THEME',               'gray');
 //define('EXTJS_PATH',                '../../extjs');
+
 define('ROOT_DIRECTORY',            '/home/rijo/programming/github/m3uer/src');
 //define('ROOT_DIRECTORY',            '/share/HDA_DATA/Qmultimedia/Musik');
 
