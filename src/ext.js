@@ -22,7 +22,7 @@ function render_playlists(root) {
                         if (btn == 'ok'){
                             // Create playlist
                             Ext.Ajax.request({
-                                url: 'new_playlist.php?root='+root+'&path='+currentNode.id+'&name='+text,
+                                url: 'playlist.php?q=create&root='+root+'&path='+currentNode.id+'&name='+text,
                                 success: function(response, opts) {
                                     Ext.Msg.show({
                                         title: 'Create new playlist',
@@ -58,7 +58,33 @@ function render_playlists(root) {
                 id: 'delete',
                 text:'Delete playlist',
                 handler: function() {
-                    alert('DELETE');
+                    Ext.Msg.show({
+                        title: 'Delete playlist',
+                        msg: 'Are you sure you want to delete the playlist?',
+                        buttons: Ext.Msg.YESNO,
+                        icon: Ext.MessageBox.QUESTION,
+                        fn: function(response) {
+                            if (response == "yes") {
+                                // Delete playlist
+                                Ext.Ajax.request({
+                                    url: 'playlist.php?q=delete&root='+root+'&path='+currentNode.id,
+                                    success: function(response, opts) {
+                                        Ext.Msg.show({
+                                            title: 'Delete playlist',
+                                            msg: response.responseText,
+                                            icon: Ext.Msg.INFO,
+                                            minWidth: 200,
+                                            buttons: Ext.Msg.OK,
+                                        });
+                                        tree.root.reload();
+                                    },
+                                    failure: function(response, opts) {
+                                        alert("Could not delete playlist: "+response.responseText);
+                                    }
+                                });
+                            }
+                        }
+                    });
                 }
             }
         ]
@@ -73,7 +99,7 @@ function render_playlists(root) {
         animate: false,
         autoScroll: true,
         loader: new Ext.tree.TreeLoader({
-            dataUrl: 'data_playlists.php?root='+root
+            dataUrl: 'data.php?q=playlists&root='+root
         }),
         root: {
             id: root,
@@ -118,7 +144,7 @@ function render_playlist(root, playlist) {
         animate: false,
         autoScroll: true,
         loader: new Ext.tree.TreeLoader({
-            dataUrl: 'data_playlist.php?root='+root+'&path='+playlist
+            dataUrl: 'data.php?q=playlist&root='+root+'&path='+playlist
         }),
         root: {
             id: root,
@@ -173,7 +199,7 @@ function render_playlist(root, playlist) {
                     msg += node.id;
                 });
                 Ext.Ajax.request({
-                    url: 'save_playlist.php?root='+root+'&path='+playlist,
+                    url: 'playlist.php?q=save&root='+root+'&path='+playlist,
                     params: { data: Ext.encode(msg.split(',')) },
                     success: function(response, opts) {
                         //var obj = Ext.decode(response.responseText);

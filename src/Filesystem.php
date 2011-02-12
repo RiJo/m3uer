@@ -25,7 +25,7 @@ class Filesystem {
         $this->root_path = $root_path;
         $this->checkboxes = $checkboxes;
     }
-    
+
     public function add($paths) {
         if (!is_array($paths))
             $paths = array($paths);
@@ -51,6 +51,41 @@ class Filesystem {
 
         if (count($items) > 0)
             return $this->add_recursive($new_file->children, $items, $relative_path.DIRECTORY_SEPARATOR.$key);
+    }
+
+    public function remove($paths) {
+        if (!is_array($paths))
+            $paths = array($paths);
+
+        $result = true;
+        foreach ($paths as $path) {
+            if (strpos($path, $this->root_path) === 0)
+                $path = substr($path, strlen($this->root_path) + 1);
+            $result &= $this->remove_recursive($this->nodes, explode(DIRECTORY_SEPARATOR, $path));
+        }
+        return $result;
+    }
+
+    private function remove_recursive(&$nodes, $items, $relative_path = '.') {
+        $key = array_shift($items);
+
+        if (count($items) == 0) {
+            // Leaf found
+            for ($i = 0; $i < count($nodes); $i++) {
+                if ($key == $nodes[$i]->text) {
+                    unset($nodes[$i]);
+                    array_unshift ($nodes, array_shift($nodes)); // fix indexes
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        foreach ($nodes as $node) {
+            if ($key == $node->text)
+                return $this->remove_recursive($node->children, $items, $relative_path.DIRECTORY_SEPARATOR.$key);
+        }
+        return false;
     }
 
     public function expand($paths) {
