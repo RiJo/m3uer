@@ -18,14 +18,15 @@ function render_playlists(root) {
                 text:'Add new playlist',
                 handler: function() {
                     // Prompt for playlist name
-                    Ext.Msg.prompt('Create new playlist', 'Enter the name of the new playlist', function(btn, text) {
+                    var title = 'Create new playlist';
+                    Ext.Msg.prompt(title, 'Enter the name of the new playlist', function(btn, text) {
                         if (btn == 'ok'){
                             // Create playlist
                             Ext.Ajax.request({
                                 url: 'playlist.php?q=create&root='+root+'&path='+currentNode.id+'&name='+text,
                                 success: function(response, opts) {
                                     Ext.Msg.show({
-                                        title: 'Create new playlist',
+                                        title: title,
                                         msg: response.responseText,
                                         icon: Ext.Msg.INFO,
                                         minWidth: 200,
@@ -58,8 +59,9 @@ function render_playlists(root) {
                 id: 'delete',
                 text:'Delete playlist',
                 handler: function() {
+                    var title = 'Delete playlist';
                     Ext.Msg.show({
-                        title: 'Delete playlist',
+                        title: title,
                         msg: 'Are you sure you want to delete the playlist?',
                         buttons: Ext.Msg.YESNO,
                         icon: Ext.MessageBox.QUESTION,
@@ -70,7 +72,7 @@ function render_playlists(root) {
                                     url: 'playlist.php?q=delete&root='+root+'&path='+currentNode.id,
                                     success: function(response, opts) {
                                         Ext.Msg.show({
-                                            title: 'Delete playlist',
+                                            title: title,
                                             msg: response.responseText,
                                             icon: Ext.Msg.INFO,
                                             minWidth: 200,
@@ -175,8 +177,9 @@ function render_playlist(root, playlist) {
         buttons: [{
             text: 'Back',
             handler: function() {
+                var title = 'Back to playlists';
                 Ext.Msg.show({
-                    title: 'Back to playlists',
+                    title: title,
                     msg: 'Are you sure you want to go back?',
                     buttons: Ext.Msg.YESNO,
                     icon: Ext.MessageBox.QUESTION,
@@ -207,8 +210,9 @@ function render_playlist(root, playlist) {
                         //var options = Ext.decode(result.responseText).options;
 
                         //var resultMessage = jsonData.data.result;
+                        var title = 'Playlist saved';
                         Ext.Msg.show({
-                            title: 'Playlist saved', 
+                            title: title,
                             msg: response.responseText,
                             icon: Ext.Msg.INFO,
                             minWidth: 200,
