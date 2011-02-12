@@ -4,20 +4,11 @@
     TODO:
     * Fix renderTo variable
     * Loading indication while loading filesystem
-    * do a CREDO check before calling program stable
-        * C - done
-        * R - done
-        * E - done
-        * D - 
-        * O - done
-    * Create an ignore-file-list (for dotfiles: .@__thumb)
     * Parent node is not checked on load when all childs are checked
-    * Not expand all nodes (only relevant ones)
     * icons depending on filetype
     * Order trees
     * error messages when something fails
     * Show invalid paths in playlist
-    * Make filenames consistent: rename Ext.js, fix dashes
 */
 
 require_once('config.php');

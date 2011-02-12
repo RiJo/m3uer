@@ -19,8 +19,6 @@
     * Tree view of playlists
     * Tree view of media files in given playlist
     * Add new playlist
-    * Select media files of playlist
+    * Delete existing playlists
+    * Edit existing playlists
 --------------------------------------------------------------------------------
-
- TODO:
-    * Delete playlist
