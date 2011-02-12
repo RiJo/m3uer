@@ -82,10 +82,16 @@ function load_global($force_reload = false) {
     if (!isset($_SESSION[SESSION_PLAYLISTS]) || !isset($_SESSION[SESSION_MEDIA]) || $force_reload) {
         $filesystem_trees = load_filesystem(ROOT_DIRECTORY, $extensions, $skip_patterns);
 
-        $playlist_tree = new Filesystem(ROOT_DIRECTORY, $filesystem_trees[SESSION_PLAYLISTS], false);
+        // Build playlists tree
+        $playlist_tree = new Filesystem(ROOT_DIRECTORY, false);
+        $playlist_tree->add($filesystem_trees['directories']);
+        $playlist_tree->add($filesystem_trees[SESSION_PLAYLISTS]);
         $playlist_tree->expand($filesystem_trees[SESSION_PLAYLISTS]);
 
+        // Build media tree
         $media_tree = new Filesystem(ROOT_DIRECTORY, $filesystem_trees[SESSION_MEDIA], true);
+        $media_tree->add($filesystem_trees['directories']);
+        $media_tree->add($filesystem_trees[SESSION_MEDIA]);
 
         $_SESSION[SESSION_PLAYLISTS] = serialize($playlist_tree);
         $_SESSION[SESSION_MEDIA] = serialize($media_tree);

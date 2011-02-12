@@ -11,7 +11,7 @@ define('APPLICATION_VERSION',       '0.1.0');
 define('EXTJS_PATH',                '../ext');
 //define('EXTJS_PATH',                '../../extjs');
 define('ROOT_DIRECTORY',            '/home/rijo/programming/github/m3uer/src');
-//define('ROOT_DIRECTORY',    '/share/HDA_DATA/Qmultimedia/Musik');
+//define('ROOT_DIRECTORY',            '/share/HDA_DATA/Qmultimedia/Musik');
 
 define('LINE_BREAK',                chr(10));
 define('COMMENT_SYMBOL',            '#');

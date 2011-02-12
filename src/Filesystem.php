@@ -21,10 +21,9 @@ class Filesystem {
     private $root_path = '';
     private $nodes = array();
 
-    public function  __construct($root_path, $files, $checkboxes = false) {
+    public function  __construct($root_path, $checkboxes = false) {
         $this->root_path = $root_path;
         $this->checkboxes = $checkboxes;
-        $this->add($files);
     }
     
     public function add($paths) {
