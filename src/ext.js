@@ -1,7 +1,6 @@
 
 // Global variable to be used in context menus
 var currentNode = '';
-var lm = new Ext.LoadMask('loading', {msg: 'Loading...'});
 
 function render(root, playlist) {
     if (playlist == '')
@@ -94,16 +93,15 @@ function render_playlists(root) {
     });
 
     var tree = new Ext.tree.TreePanel({
-        renderTo: Ext.getBody(),
+        renderTo: 'tree',
         title: 'Playlists',
-        width: 700,
+        //width: 700,
         height: 500,
         userArrows: true,
         animate: false,
         autoScroll: true,
         loader: new Ext.tree.TreeLoader({
-            dataUrl: 'data.php?q=playlists&root='+root,
-            loadMask: lm
+            dataUrl: 'data.php?q=playlists&root='+root
         }),
         root: {
             id: root,
@@ -140,16 +138,15 @@ function render_playlists(root) {
 
 function render_playlist(root, playlist) {
     var tree = new Ext.tree.TreePanel({
-        renderTo: Ext.getBody(),
+        renderTo: 'tree',
         title: playlist,
-        width: 700,
+        //width: 700,
         height: 500,
         userArrows: true,
         animate: false,
         autoScroll: true,
         loader: new Ext.tree.TreeLoader({
-            dataUrl: 'data.php?q=playlist&root='+root+'&path='+playlist,
-            loadMask: lm
+            dataUrl: 'data.php?q=playlist&root='+root+'&path='+playlist
         }),
         root: {
             id: root,

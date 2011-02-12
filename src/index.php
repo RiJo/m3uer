@@ -32,7 +32,7 @@ function echo_header() {
     echo "\n<title>".APPLICATION_NAME." v.".APPLICATION_VERSION."</title>";
     echo "\n<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />";
     echo "\n<meta http-equiv='Content-Language' content='en' />";
-    //echo "\n<link rel='stylesheet' href='./style.css' type='text/css' />";
+    echo "\n<link rel='stylesheet' href='./style.css' type='text/css' />";
 
     // Ext JS
     echo "\n<link rel=\"stylesheet\" type=\"text/css\" href=\"".EXTJS_PATH."/resources/css/ext-all-notheme.css\">";
@@ -41,15 +41,20 @@ function echo_header() {
     echo "\n<script type=\"text/javascript\" src=\"".EXTJS_PATH."/ext-all-debug.js\"></script>";
     echo "\n<script type=\"text/javascript\" src=\"ext.js\"></script>";
 
-    echo "\n<script type='text/javascript'>";
-    echo "\n    javascript:render('".ROOT_DIRECTORY."', '".((empty($_GET['playlist'])) ? '' : $_GET['playlist'])."');";
-    echo "\n</script>";
     echo "\n</head><body>";
 }
 
 function echo_body() {
     //echo "<a href=\"unit_tests.php\">Unit tests</a>";
-    echo "<div id='tree-div'></div>";
+    
+    echo "\n    <div id='container'>";
+    echo "\n        <div class='content' id='header'>".APPLICATION_NAME." v.".APPLICATION_VERSION."</div>";
+    echo "\n        <div class='content' id='messages'></div>";
+    echo "\n        <div class='content' id='tree'></div>";
+    echo "\n        <script type='text/javascript'>";
+    echo "\n            javascript:render('".ROOT_DIRECTORY."', '".((empty($_GET['playlist'])) ? '' : $_GET['playlist'])."');";
+    echo "\n        </script>";
+    echo "\n    </div>";
 }
 
 function echo_footer() {
