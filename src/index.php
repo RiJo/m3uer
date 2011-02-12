@@ -83,8 +83,6 @@ function load_global($force_reload = false) {
 
         $_SESSION[SESSION_PLAYLISTS] = serialize($playlist_tree);
         $_SESSION[SESSION_MEDIA] = serialize($media_tree);
-        
-        die('Length: '.strlen(serialize($playlist_tree)));
     }
 }
 

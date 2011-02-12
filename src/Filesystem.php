@@ -5,7 +5,6 @@ require_once('file_handling.php');
 class File {
     public $text = "";
     public $id = "";
-    //public $iconCls = "";
     public $leaf = true;
     public $expanded = false;
     public $checked = 'undefined';
