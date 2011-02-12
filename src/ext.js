@@ -1,6 +1,7 @@
 
 // Global variable to be used in context menus
 var currentNode = '';
+var lm = new Ext.LoadMask('loading', {msg: 'Loading...'});
 
 function render(root, playlist) {
     if (playlist == '')
@@ -101,7 +102,8 @@ function render_playlists(root) {
         animate: false,
         autoScroll: true,
         loader: new Ext.tree.TreeLoader({
-            dataUrl: 'data.php?q=playlists&root='+root
+            dataUrl: 'data.php?q=playlists&root='+root,
+            loadMask: lm
         }),
         root: {
             id: root,
@@ -146,7 +148,8 @@ function render_playlist(root, playlist) {
         animate: false,
         autoScroll: true,
         loader: new Ext.tree.TreeLoader({
-            dataUrl: 'data.php?q=playlist&root='+root+'&path='+playlist
+            dataUrl: 'data.php?q=playlist&root='+root+'&path='+playlist,
+            loadMask: lm
         }),
         root: {
             id: root,
