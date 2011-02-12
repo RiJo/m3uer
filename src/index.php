@@ -83,6 +83,8 @@ function load_global($force_reload = false) {
         $filesystem_trees = load_filesystem(ROOT_DIRECTORY, $extensions, $skip_patterns);
 
         $playlist_tree = new Filesystem(ROOT_DIRECTORY, $filesystem_trees[SESSION_PLAYLISTS], false);
+        $playlist_tree->expand($filesystem_trees[SESSION_PLAYLISTS]);
+
         $media_tree = new Filesystem(ROOT_DIRECTORY, $filesystem_trees[SESSION_MEDIA], true);
 
         $_SESSION[SESSION_PLAYLISTS] = serialize($playlist_tree);

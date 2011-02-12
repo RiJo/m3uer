@@ -53,7 +53,8 @@ if (isset($_GET['root']) && isset($_GET['path']) && isset($_SESSION[SESSION_MEDI
 
     $result = load_playlist($root, $playlist);
 
-    $filesystem->check_paths($result['valid']);
+    $filesystem->check($result['valid']);
+    $filesystem->expand($result['valid']);
 
     //~ die("<pre>".print_r($result, true)."</pre>");
 
