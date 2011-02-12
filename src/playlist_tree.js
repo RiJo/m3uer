@@ -98,7 +98,13 @@ function render_playlists(root) {
                     ctxDirectory.show(node.ui.getAnchor());
                 }
             }
-        }
+        },
+        buttons: [{
+            text: 'Reload filesystem',
+            handler: function() {
+                window.location = 'index.php?reload=1';
+            }
+        }]
     });
 }
 

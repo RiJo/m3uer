@@ -2,8 +2,6 @@
 
 /*
     TODO:
-    * What happens if nothing is selected when saving playlist?
-    * Button to reload filesystem
     * Loading indication while loading filesystem
     * do a CREDO check before calling program stable
         * C - done
@@ -91,7 +89,8 @@ function load_global($force_reload = false) {
 //   PRINTOUT   ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-load_global(true);
+$reload = isset($_GET['reload']);
+load_global($reload);
 
 echo_header();
 echo_body();
