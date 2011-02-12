@@ -19,6 +19,7 @@ define('ROOT_DIRECTORY',            '/home/rijo/programming/github/m3uer/src');
 define('LINE_BREAK',                chr(10));
 define('COMMENT_SYMBOL',            '#');
 define('SESSION_MEDIA',             'media');
+define('SESSION_PLAYLIST',          'playlist');
 define('SESSION_PLAYLISTS',         'playlists');
 
 // Following are comma separated lists

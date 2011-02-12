@@ -4,12 +4,22 @@ require_once('config.php');
 require_once('file_handling.php');
 require_once('Filesystem.php');
 
+define('KEY_VALID',                 'valid');
+define('KEY_INVALID',               'invalid');
+define('KEY_COMMENTS',              'commants');
+
 if (!isset($_GET['q']))
     die("No valid query given");
 
 switch ($_GET['q']) {
     case 'playlist':
         playlist();
+        break;
+    case 'playlist-invalid':
+        playlist_type_list(KEY_INVALID);
+        break;
+    case 'playlist-comments':
+        playlist_type_list(KEY_COMMENTS);
         break;
     case 'playlists':
         playlists();
@@ -31,14 +41,28 @@ function playlist() {
         if (!file_exists($playlist))
             die("Could not locate playlist \"$playlist\"");
 
-        $result = load_playlist($root, $playlist);
+        $result = parse_playlist($root, $playlist);
 
-        $filesystem->check($result['valid']);
-        $filesystem->expand($result['valid']);
+        $filesystem->check($result[KEY_VALID]);
+        $filesystem->expand($result[KEY_VALID]);
 
         //~ die("<pre>".print_r($result, true)."</pre>");
 
         echo $filesystem->to_json();
+    }
+}
+
+function playlist_type_list($key) {
+    if (isset($_GET['root']) && isset($_GET['path'])) {
+        $root = $_GET['root'];
+        $playlist = $_GET['path'];
+
+        if (!file_exists($playlist))
+            die("Could not locate playlist \"$playlist\"");
+
+        $result = parse_playlist($root, $playlist);
+
+        return json_encode($result[$key]);
     }
 }
 
@@ -55,7 +79,17 @@ function playlists() {
 //   HELPERS   /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-function load_playlist($root, $playlist) {
+function load_playlist($root, $playlist, $force_reload = false) {
+    if (!isset($_SESSION[SESSION_PLAYLIST]))
+        $_SESSION[SESSION_PLAYLIST] = array();
+
+    if (!isset($_SESSION[SESSION_PLAYLIST][$playlist]) || $force_reload) {
+        $_SESSION[SESSION_PLAYLIST][$playlist] = parse_playlist($root, $playlist);
+    }
+    return $_SESSION[SESSION_PLAYLIST][$playlist];
+}
+
+function parse_playlist($root, $playlist) {
     $playlist_file_info = get_file_info($playlist);
 
     $contents = "";
@@ -67,16 +101,16 @@ function load_playlist($root, $playlist) {
     }
 
     $result = array(
-        'valid' => array(),
-        'invalid' => array(),
-        'comments' => array()
+        KEY_VALID => array(),
+        KEY_INVALID => array(),
+        KEY_COMMENTS => array()
     );
     $comments = array();
     foreach (explode(LINE_BREAK, $contents) as $line) {
         $line = trim($line);
         if (strlen($line) > 0) {
             if ($line[0] == COMMENT_SYMBOL) {
-                array_push($result['comments'], trim(substr($line, 1)));
+                array_push($result[KEY_COMMENTS], trim(substr($line, 1)));
             }
             else {
                 $file_path = realpath($line);
@@ -84,9 +118,9 @@ function load_playlist($root, $playlist) {
                     $file_path = simplify_path($playlist_file_info['dirname'].DIRECTORY_SEPARATOR.$line);
 
                 if (file_exists($file_path))
-                    array_push($result['valid'], $file_path);
+                    array_push($result[KEY_VALID], $file_path);
                 else
-                    array_push($result['invalid'], $file_path);
+                    array_push($result[KEY_INVALID], $file_path);
             }
         }
     }

@@ -26,3 +26,9 @@ div#messages {
 div#tree {
     
 }
+
+div#footer {
+    padding: 2px;
+    font-size: 10px;
+    color: #777;
+}
