@@ -157,21 +157,21 @@ function render_playlist(root, playlist) {
             'render': function() {
                 this.getRootNode().expand();
             },
-/*            checkchange: function(node, checked) {
-                toggleCheck(node, checked);
+            'checkchange': function(node, checked) {
                 if (checked) {
-                    node.getUI().addClass('complete');
+                    node.expand();
+                    node.eachChild(function(child){
+                        child.expand();
+                        child.ui.toggleCheck(true);
+                    });
                 }
                 else {
-                    node.getUI().removeClass('complete');
+                    node.eachChild(function(child){
+                        child.ui.toggleCheck(false);
+                        child.collapse();
+                    });
+                    node.collapse();
                 }
-            }*/
-            'checkchange': function(node, checked) {
-                node.expand();
-                node.expandChildNodes(true);
-                node.eachChild(function(child){
-                    child.ui.toggleCheck(checked);
-                });
             }
         },
         buttons: [{
