@@ -125,34 +125,35 @@ class Filesystem {
         if (!is_array($paths))
             $paths = array($paths);
 
-        $invalid = array();
         foreach ($paths as $path) {
             if (strpos($path, $this->root_path) === 0)
                 $path = substr($path, strlen($this->root_path) + 1);
-            if (!$this->check_recursive($this->nodes, explode(DIRECTORY_SEPARATOR, $path)))
-                array_push($invalid, $path);
+            $this->check_recursive($this->nodes, explode(DIRECTORY_SEPARATOR, $path));
         }
-        return $invalid;
     }
 
     private function check_recursive(&$nodes, $items, $relative_path = '.') {
-        if (count($items) == 0)
-            return true;
-
         $key = array_shift($items);
+
+        $node_found = false;
+        $all_childs_checked = true;
         foreach ($nodes as $node) {
             if ($key == $node->text) {
+                $node_found = true;
                 if (count($items) == 0) {
                     $node->checked = true;
-                    return true;
                 }
                 else {
-                    return $this->check_recursive($node->children, $items, $relative_path.DIRECTORY_SEPARATOR.$key);
+                    $node->checked = (bool)$this->check_recursive($node->children, $items, $relative_path.DIRECTORY_SEPARATOR.$key);
                 }
             }
+            $all_childs_checked &= $node->checked;
         }
 
-        return false;
+        if (!$node_found)
+            die("Could not find the given node: $key<br><pre>".print_r($nodes, true)."</pre>");
+
+        return $all_childs_checked;
     }
 
     public function to_json() {
