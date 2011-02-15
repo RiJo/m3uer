@@ -1,6 +1,7 @@
 
 // Global variable to be used in context menus
 var currentNode = '';
+var restrictCascade = false;
 
 function render(root, playlist) {
     if (playlist == '')
@@ -158,20 +159,32 @@ function render_playlist(root, playlist) {
                 this.getRootNode().expand();
             },
             'checkchange': function(node, checked) {
-                if (checked) {
-                    node.expand();
-                    node.eachChild(function(child){
-                        child.expand();
-                        child.ui.toggleCheck(true);
-                    });
+                // Cascade child nodes
+                if (!restrictCascade) {
+                    if (checked) {
+                        node.expand();
+                        node.eachChild(function(child) {
+                            child.expand();
+                            child.ui.toggleCheck(true);
+                        });
+                    }
+                    else {
+                        node.eachChild(function(child) {
+                            child.ui.toggleCheck(false);
+                            child.collapse();
+                        });
+                        node.collapse();
+                    }
                 }
-                else {
-                    node.eachChild(function(child){
-                        child.ui.toggleCheck(false);
-                        child.collapse();
-                    });
-                    node.collapse();
-                }
+
+                // Toggle parent node
+                restrictCascade = true;
+                var checkParent = true;
+                node.parentNode.eachChild(function(child) {
+                    checkParent &= child.ui.isChecked();
+                });
+                node.parentNode.ui.toggleCheck(checkParent);
+                restrictCascade = false;
             }
         },
         buttons: [{
