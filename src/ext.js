@@ -230,6 +230,7 @@ function render_playlist(root, playlist) {
                             minWidth: 200,
                             buttons: Ext.Msg.OK
                         });
+                        store.reload();
                     },
                     failure: function(response, opts) {
                         alert("Could not save playlist: "+response.responseText);

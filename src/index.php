@@ -2,11 +2,12 @@
 
 /*
     TODO:
-    * Set different colors of each row type in the playlist overview list
+    * Show playlist name in edit playlist page.
     * Warn when a playlist containing invalid paths is about to be saved (must confirm)
     * Create a filter for list of playlist contents (to only show invalid for instance)
     * Loading indication while loading filesystem (put load filesystem in an ajax script?)
     * Bug: check out of sync when double click on directory
+    * Printout permissions of playlists?
     * Make screenshots
 */
 

@@ -95,7 +95,7 @@ function parse_playlist($root, $playlist) {
 
     $contents = "";
     if (filesize($playlist_file_info['path']) > 0) {
-        $handle = fopen($playlist_file_info['path'], 'r')
+        $handle = @fopen($playlist_file_info['path'], 'r')
             or die("Error: could not open file '$playlist_file_info[path]' for reading");
         $contents = fread($handle, filesize($playlist_file_info['path']));
         fclose($handle);

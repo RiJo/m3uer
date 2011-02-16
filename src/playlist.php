@@ -111,7 +111,7 @@ function save() {
 
         //~ die("<pre>".print_r($data, true)."</pre>");
 
-        $handle = fopen($playlist_file_info['path'], 'w')
+        $handle = @fopen($playlist_file_info['path'], 'w')
             or die('Playlist could not be saved: Could not open file for writing');
 
         fwrite($handle, playlist_header().LINE_BREAK);
