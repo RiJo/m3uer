@@ -4,22 +4,24 @@ require_once('config.php');
 require_once('file_handling.php');
 require_once('Filesystem.php');
 
+define('KEY_CONTENTS',              'contents');
 define('KEY_VALID',                 'valid');
 define('KEY_INVALID',               'invalid');
-define('KEY_COMMENTS',              'commants');
+define('KEY_COMMENTS',              'comments');
+
+define('TYPE_COMMENT',              '1');
+define('TYPE_VALID',                '2');
+define('TYPE_INVALID',              '3');
 
 if (!isset($_GET['q']))
     die("No valid query given");
 
 switch ($_GET['q']) {
-    case 'playlist':
-        playlist();
+    case 'playlist-tree':
+        playlist_valid_tree();
         break;
-    case 'playlist-invalid':
-        playlist_type_list(KEY_INVALID);
-        break;
-    case 'playlist-comments':
-        playlist_type_list(KEY_COMMENTS);
+    case 'playlist-contents':
+        playlist_contents();
         break;
     case 'playlists':
         playlists();
@@ -32,7 +34,7 @@ switch ($_GET['q']) {
 //   QUERIES   /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-function playlist() {
+function playlist_valid_tree() {
     if (isset($_GET['root']) && isset($_GET['path']) && isset($_SESSION[SESSION_MEDIA])) {
         $root = $_GET['root'];
         $playlist = $_GET['path'];
@@ -41,7 +43,7 @@ function playlist() {
         if (!file_exists($playlist))
             die("Could not locate playlist \"$playlist\"");
 
-        $result = parse_playlist($root, $playlist);
+        $result = load_playlist($root, $playlist, true);
 
         $filesystem->check($result[KEY_VALID]);
         $filesystem->expand($result[KEY_VALID]);
@@ -52,7 +54,7 @@ function playlist() {
     }
 }
 
-function playlist_type_list($key) {
+function playlist_contents() {
     if (isset($_GET['root']) && isset($_GET['path'])) {
         $root = $_GET['root'];
         $playlist = $_GET['path'];
@@ -60,9 +62,17 @@ function playlist_type_list($key) {
         if (!file_exists($playlist))
             die("Could not locate playlist \"$playlist\"");
 
-        $result = parse_playlist($root, $playlist);
+        /*echo json_encode(
+            array(
+                array('type'=>'foo', 'content'=>'bar'),
+                array('type'=>'baz', 'content'=>'fuu')
+            )
+        );*/
 
-        return json_encode($result[$key]);
+        $result = load_playlist($root, $playlist, true);
+        //~ echo "<pre>".print_r(array(array('type'=>'foo', 'content'=>'bar'),array('type'=>'baz', 'content'=>'fuu')), true)."</pre>";
+        //~ die("<pre>".print_r($result[KEY_CONTENTS], true)."</pre>");
+        echo json_encode($result[KEY_CONTENTS]);
     }
 }
 
@@ -101,6 +111,7 @@ function parse_playlist($root, $playlist) {
     }
 
     $result = array(
+        KEY_CONTENTS => array(),
         KEY_VALID => array(),
         KEY_INVALID => array(),
         KEY_COMMENTS => array()
@@ -110,6 +121,7 @@ function parse_playlist($root, $playlist) {
         $line = trim($line);
         if (strlen($line) > 0) {
             if ($line[0] == COMMENT_SYMBOL) {
+                array_push($result[KEY_CONTENTS], array('type'=>TYPE_COMMENT, 'content'=>trim(substr($line, 1))));
                 array_push($result[KEY_COMMENTS], trim(substr($line, 1)));
             }
             else {
@@ -117,10 +129,14 @@ function parse_playlist($root, $playlist) {
                 if (strlen($file_path) == 0) // Check if path is relative
                     $file_path = simplify_path($playlist_file_info['dirname'].DIRECTORY_SEPARATOR.$line);
 
-                if (file_exists($file_path))
+                if (file_exists($file_path)) {
+                    array_push($result[KEY_CONTENTS], array('type'=>TYPE_VALID, 'content'=>$line));
                     array_push($result[KEY_VALID], $file_path);
-                else
+                }
+                else {
+                    array_push($result[KEY_CONTENTS], array('type'=>TYPE_INVALID, 'content'=>$line));
                     array_push($result[KEY_INVALID], $file_path);
+                }
             }
         }
     }

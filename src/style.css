@@ -32,3 +32,7 @@ div#footer {
     font-size: 10px;
     color: #777;
 }
+
+.row-comment {
+    background-color: #f00;
+}

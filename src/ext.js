@@ -97,7 +97,7 @@ function render_playlists(root) {
         renderTo: 'tree',
         title: 'Playlists',
         //width: 700,
-        height: 500,
+        height: 475,
         userArrows: true,
         animate: false,
         autoScroll: true,
@@ -146,12 +146,13 @@ function render_playlist(root, playlist) {
         renderTo: 'tree',
         title: playlist,
         //width: 700,
-        height: 500,
+        height: 475,
         userArrows: true,
         animate: false,
         autoScroll: true,
+        collapsible: true,
         loader: new Ext.tree.TreeLoader({
-            dataUrl: 'data.php?q=playlist&root='+root+'&path='+playlist
+            dataUrl: 'data.php?q=playlist-tree&root='+root+'&path='+playlist
         }),
         root: {
             id: root,
@@ -247,4 +248,52 @@ function render_playlist(root, playlist) {
     var myTreeSorter = new Ext.tree.TreeSorter(tree, {
     });
     myTreeSorter.doSort(tree.getRootNode());
+
+    /* List with all contents of playlist */
+
+    var store = new Ext.data.JsonStore({
+        url: 'data.php?q=playlist-contents&root='+root+'&path='+playlist,
+        //root: 'images',
+        fields: ['type', 'content']
+    });
+    store.load();
+
+    var listView = new Ext.list.ListView({
+        store: store,
+        multiSelect: true,
+        emptyText: 'Empty playlist',
+        reserveScrollOffset: true,
+
+        viewConfig: {
+            getRowClass: function(r, idx, rowParams, ds) {
+                if (r.get('type') == '1') {
+                    return 'row-comment';
+                }
+            }
+        },
+
+
+        columns: [{
+            header: 'Type',
+            width: .10,
+            dataIndex: 'type'
+        },{
+            header: 'Content',
+            dataIndex: 'content',
+            //align: 'right',
+        }]
+    });
+    
+    // put it in a Panel so it looks pretty
+    var panel = new Ext.Panel({
+        id: 'images-view',
+        //width: 425,
+        height: 250,
+        renderTo: 'messages',
+        collapsible: true,
+        collapsed: true,
+        layout: 'fit',
+        title: 'Playlist contents',
+        items: listView
+    });
 }

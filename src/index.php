@@ -2,12 +2,8 @@
 
 /*
     TODO:
-    * Show invalid paths in playlist
-    * error messages when something fails
     * Loading indication while loading filesystem (put load filesystem in an ajax script?)
-    * Order trees
-    * Do not check (when clicked) directories not containning any media files
-    * Check out of sync when double click on directory
+    * Bug: check out of sync when double click on directory
 */
 
 require_once('config.php');
