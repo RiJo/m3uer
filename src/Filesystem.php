@@ -93,15 +93,10 @@ class Filesystem {
 
         for ($i = 0; $i < count($nodes); $i++) {
             if (!$nodes[$i]->leaf) {
-                if (count($nodes[$i]->children) == 0) {
-                    echo "Removing: ".$nodes[$i]->id."<br>";
+                if (count($nodes[$i]->children) == 0)
                     unset($nodes[$i]);
-                    echo "<pre>".print_r($nodes,true)."</pre>";
-                }
-                else {
-                    echo "Entering: ".$nodes[$i]->id."<br>";
+                else
                     $this->remove_empty_nodes($nodes[$i]->children);
-                }
             }
         }
         array_unshift($nodes, array_shift($nodes)); // fix indexes

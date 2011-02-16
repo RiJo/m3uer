@@ -42,7 +42,7 @@ function create() {
 
         // Create file
         @touch($playlist_path)
-            or die("Could not create file $playlist_path");
+            or die('Could not create playlist: Operation not permitted');
 
         // Add new file to session
         $playlists = unserialize($_SESSION[SESSION_PLAYLISTS]);
@@ -52,7 +52,7 @@ function create() {
 
         //~ die("<pre>".print_r(json_decode($playlists->to_json()), true)."</pre>");
 
-        echo "Playlist created successfully";
+        echo 'Playlist created successfully';
     }
     else
         die("Could not create playlist: Invalid aguments given");
@@ -76,7 +76,7 @@ function delete() {
 
         // Delete file
         @unlink($path)
-            or die("Could not delete file $path");
+            or die('Could not delete playlist: Operation not permitted');
 
         // Remove file from session
         $playlists = unserialize($_SESSION[SESSION_PLAYLISTS]);
@@ -86,10 +86,10 @@ function delete() {
 
         //~ die("<pre>".print_r(json_decode($playlists->to_json()), true)."</pre>");
 
-        echo "Playlist deleted successfully";
+        echo 'Playlist deleted successfully';
     }
     else
-        die("Could not delete playlist: Invalid aguments given");
+        die('Could not delete playlist: Invalid aguments given');
 }
 
 function save() {
@@ -107,21 +107,21 @@ function save() {
         $data = json_decode($data, true);
 
         if ($data == null)
-            die("Could not parse json data:<br><br>$_POST[data]");
+            die('Playlist could not be saved: Could not parse json data');
 
         //~ die("<pre>".print_r($data, true)."</pre>");
 
         $handle = fopen($playlist_file_info['path'], 'w')
-            or die("Could not open file $playlist_file_info[path] for writing");
+            or die('Playlist could not be saved: Could not open file for writing');
 
         fwrite($handle, playlist_header().LINE_BREAK);
         fwrite($handle, implode("\n", playlist_contents($playlist_file_info['path'], $data)));
         fclose($handle);
 
-        echo "Playlist saved successfully";
+        echo 'Playlist saved successfully';
     }
     else
-        die("Playlist could not be saved: Invalid aguments given");
+        die('Playlist could not be saved: Invalid aguments given');
 }
 
 ////////////////////////////////////////////////////////////////////////////////
