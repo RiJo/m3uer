@@ -135,6 +135,10 @@ function render_playlists(root) {
             }
         }]
     });
+
+    var myTreeSorter = new Ext.tree.TreeSorter(tree, {
+    });
+    myTreeSorter.doSort(tree.getRootNode());
 }
 
 function render_playlist(root, playlist) {
@@ -238,6 +242,9 @@ function render_playlist(root, playlist) {
                 });
             }
         }]
+    });
 
-    })
+    var myTreeSorter = new Ext.tree.TreeSorter(tree, {
+    });
+    myTreeSorter.doSort(tree.getRootNode());
 }
