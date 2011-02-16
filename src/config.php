@@ -6,7 +6,7 @@ if(!isset($_SESSION))
     session_start();
 
 define('APPLICATION_NAME',          'm3uer');
-define('APPLICATION_VERSION',       '0.1.0');
+define('APPLICATION_VERSION',       '0.2.0-beta');
 
 define('ROOT_DIRECTORY',            '/home/rijo/programming/github/m3uer/src');
 //define('ROOT_DIRECTORY',            '/share/HDA_DATA/Qmultimedia/Musik');

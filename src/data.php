@@ -9,9 +9,9 @@ define('KEY_VALID',                 'valid');
 define('KEY_INVALID',               'invalid');
 define('KEY_COMMENTS',              'comments');
 
-define('TYPE_COMMENT',              '1');
-define('TYPE_VALID',                '2');
-define('TYPE_INVALID',              '3');
+define('TYPE_COMMENT',              'comment');
+define('TYPE_VALID',                'valid');
+define('TYPE_INVALID',              'invalid');
 
 if (!isset($_GET['q']))
     die("No valid query given");

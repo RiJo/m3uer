@@ -144,13 +144,12 @@ function render_playlists(root) {
 function render_playlist(root, playlist) {
     var tree = new Ext.tree.TreePanel({
         renderTo: 'tree',
-        title: playlist,
+        //title: playlist,
         //width: 700,
         height: 475,
         userArrows: true,
         animate: false,
         autoScroll: true,
-        collapsible: true,
         loader: new Ext.tree.TreeLoader({
             dataUrl: 'data.php?q=playlist-tree&root='+root+'&path='+playlist
         }),
@@ -244,7 +243,9 @@ function render_playlist(root, playlist) {
     });
     myTreeSorter.doSort(tree.getRootNode());
 
-    /* List with all contents of playlist */
+    /*
+     * List with all contents of playlist
+     */
 
     var store = new Ext.data.JsonStore({
         url: 'data.php?q=playlist-contents&root='+root+'&path='+playlist,
@@ -253,40 +254,24 @@ function render_playlist(root, playlist) {
     });
     store.load();
 
-    var listView = new Ext.list.ListView({
+    var dataView = new Ext.DataView({
+        multiSelect: false,
         store: store,
-        multiSelect: true,
         emptyText: 'Empty playlist',
-        reserveScrollOffset: true,
-
-        viewConfig: {
-            getRowClass: function(r, idx, rowParams, ds) {
-                if (r.get('type') == '1') {
-                    return 'row-comment';
-                }
-            }
-        },
-
-        columns: [{
-            header: 'Type',
-            width: .10,
-            dataIndex: 'type'
-        },{
-            header: 'Content',
-            dataIndex: 'content',
-        }]
+        //reserveScrollOffset: true,
+        tpl: '<tpl for="."><div class="row row-{type}">{content}</div></tpl>',
     });
-    
+
     // put it in a Panel so it looks pretty
     var panel = new Ext.Panel({
         id: 'images-view',
         //width: 425,
-        height: 250,
+        //height: 250,
         renderTo: 'messages',
         collapsible: true,
         collapsed: true,
         layout: 'fit',
         title: 'Playlist contents',
-        items: listView
+        items: dataView
     });
 }

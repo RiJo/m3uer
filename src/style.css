@@ -33,14 +33,20 @@ div#footer {
     color: #777;
 }
 
+.row {
+    margin: 0 0 0 5px;
+    font-size: .8em;
+}
+
 .row-comment {
-    color: #9f9;
+    color: #393;
 }
 
 .row-valid {
-    /*background-color: #99f;*/
+    /*background-color: #339;*/
 }
 
 .row-invalid {
-    color: #f99;
+    color: #933;
+    font-weight: bold;
 }

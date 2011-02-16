@@ -7,6 +7,7 @@
     * Create a filter for list of playlist contents (to only show invalid for instance)
     * Loading indication while loading filesystem (put load filesystem in an ajax script?)
     * Bug: check out of sync when double click on directory
+    * Make screenshots
 */
 
 require_once('config.php');
