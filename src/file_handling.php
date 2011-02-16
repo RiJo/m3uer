@@ -5,7 +5,6 @@ function get_file_info($path) {
         die("Could not locate file $path");
     $real_path = realpath($path);
     $file_info = pathinfo($real_path);
-    //~ $file_info['path'] = $path;
     $file_info['path'] = $real_path;
     return $file_info;
 }
@@ -95,8 +94,6 @@ function load_filesystem_recursive($root_path, $relative_path, $extensions, $ski
         if (is_dir($file_info['path'])) {
             // Directory
             if (!in_array($file, array('.', '..'))) {
-                //foreach ($extensions as $key=>$value)
-                //    array_push($tree[$key], make_relative_path($root_path, $file_info['path'], false));
                 array_push($tree['directories'], make_relative_path($root_path, $file_info['path'], false));
                 load_filesystem_recursive($root_path, $relative_path.DIRECTORY_SEPARATOR.$file, $extensions, $skip_patterns, $tree);
             }

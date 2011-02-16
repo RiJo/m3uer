@@ -223,11 +223,6 @@ function render_playlist(root, playlist) {
                     url: 'playlist.php?q=save&root='+root+'&path='+playlist,
                     params: { data: Ext.encode(msg.split(',')) },
                     success: function(response, opts) {
-                        //var obj = Ext.decode(response.responseText);
-                        //var jsonData = Ext.decode(result.responseText);
-                        //var options = Ext.decode(result.responseText).options;
-
-                        //var resultMessage = jsonData.data.result;
                         var title = 'Playlist saved';
                         Ext.Msg.show({
                             title: title,
@@ -272,7 +267,6 @@ function render_playlist(root, playlist) {
             }
         },
 
-
         columns: [{
             header: 'Type',
             width: .10,
@@ -280,7 +274,6 @@ function render_playlist(root, playlist) {
         },{
             header: 'Content',
             dataIndex: 'content',
-            //align: 'right',
         }]
     });
     

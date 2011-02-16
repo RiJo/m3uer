@@ -3,7 +3,7 @@
     m3uer
     current version:        0.1.0
     by:                     Rikard Johansson
-    license:                GPL 3.0
+    license:                GPL v3
     dependencies:           Ext JS (http://dev.sencha.com)
 
     Simple remote m3u playlist generator and editor. It is developed to be used
@@ -23,4 +23,11 @@
     * Delete existing playlists
     * Edit existing playlists
     * Cascade checking of songs in playlist recursive (both up and down)
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+ version 0.2.0, YYYY-MM-DD
+--------------------------------------------------------------------------------
+    * 
 --------------------------------------------------------------------------------

@@ -34,5 +34,13 @@ div#footer {
 }
 
 .row-comment {
-    background-color: #f00;
+    color: #9f9;
+}
+
+.row-valid {
+    /*background-color: #99f;*/
+}
+
+.row-invalid {
+    color: #f99;
 }

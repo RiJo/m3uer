@@ -48,8 +48,6 @@ function playlist_valid_tree() {
         $filesystem->check($result[KEY_VALID]);
         $filesystem->expand($result[KEY_VALID]);
 
-        //~ die("<pre>".print_r($result, true)."</pre>");
-
         echo $filesystem->to_json();
     }
 }
@@ -62,16 +60,8 @@ function playlist_contents() {
         if (!file_exists($playlist))
             die("Could not locate playlist \"$playlist\"");
 
-        /*echo json_encode(
-            array(
-                array('type'=>'foo', 'content'=>'bar'),
-                array('type'=>'baz', 'content'=>'fuu')
-            )
-        );*/
-
         $result = load_playlist($root, $playlist, true);
-        //~ echo "<pre>".print_r(array(array('type'=>'foo', 'content'=>'bar'),array('type'=>'baz', 'content'=>'fuu')), true)."</pre>";
-        //~ die("<pre>".print_r($result[KEY_CONTENTS], true)."</pre>");
+
         echo json_encode($result[KEY_CONTENTS]);
     }
 }
@@ -79,6 +69,7 @@ function playlist_contents() {
 function playlists() {
     if (isset($_GET['root']) && isset($_SESSION[SESSION_PLAYLISTS])) {
         $root = $_GET['root'];
+
         $playlists = unserialize($_SESSION[SESSION_PLAYLISTS]);
 
         echo $playlists->to_json();
