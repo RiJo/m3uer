@@ -8,13 +8,12 @@ if(!isset($_SESSION))
 define('APPLICATION_NAME',          'm3uer');
 define('APPLICATION_VERSION',       '0.1.0');
 
-// Ext JS
-define('EXTJS_PATH',                '../ext');
-//define('EXTJS_PATH',                '../../ext');
-define('EXTJS_THEME',               'gray');
-
 define('ROOT_DIRECTORY',            '/home/rijo/programming/github/m3uer/src');
 //define('ROOT_DIRECTORY',            '/share/HDA_DATA/Qmultimedia/Musik');
+
+// Ext JS
+define('EXTJS_PATH',                '../ext');
+define('EXTJS_THEME',               'gray');
 
 define('LINE_BREAK',                chr(10));
 define('COMMENT_SYMBOL',            '#');
@@ -22,7 +21,7 @@ define('SESSION_MEDIA',             'media');
 define('SESSION_PLAYLIST',          'playlist');
 define('SESSION_PLAYLISTS',         'playlists');
 
-// Following are comma separated lists
+// Following macros are comma separated lists
 define('SKIP_FILE_PATTERNS',        '(^\.)');
 define('PLAYLIST_FORMATS',          'm3u');
 define('MEDIA_FORMATS',             'mp3,wav');

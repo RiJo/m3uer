@@ -73,7 +73,7 @@ class Filesystem {
             for ($i = 0; $i < count($nodes); $i++) {
                 if ($key == $nodes[$i]->text) {
                     unset($nodes[$i]);
-                    array_unshift ($nodes, array_shift($nodes)); // fix indexes
+                    array_unshift($nodes, array_shift($nodes)); // fix indexes
                     return true;
                 }
             }
@@ -85,6 +85,26 @@ class Filesystem {
                 return $this->remove_recursive($node->children, $items, $relative_path.DIRECTORY_SEPARATOR.$key);
         }
         return false;
+    }
+
+    public function remove_empty_nodes(&$nodes = null) {
+        if ($nodes == null)
+            $nodes = &$this->nodes;
+
+        for ($i = 0; $i < count($nodes); $i++) {
+            if (!$nodes[$i]->leaf) {
+                if (count($nodes[$i]->children) == 0) {
+                    echo "Removing: ".$nodes[$i]->id."<br>";
+                    unset($nodes[$i]);
+                    echo "<pre>".print_r($nodes,true)."</pre>";
+                }
+                else {
+                    echo "Entering: ".$nodes[$i]->id."<br>";
+                    $this->remove_empty_nodes($nodes[$i]->children);
+                }
+            }
+        }
+        array_unshift($nodes, array_shift($nodes)); // fix indexes
     }
 
     public function expand($paths) {

@@ -5,9 +5,9 @@
     * Show invalid paths in playlist
     * error messages when something fails
     * Loading indication while loading filesystem (put load filesystem in an ajax script?)
-    * Parent node is not checked on load when all childs are checked
-    * icons depending on filetype
     * Order trees
+    * Do not check (when clicked) directories not containning any media files
+    * Check out of sync when double click on directory
 */
 
 require_once('config.php');
@@ -65,6 +65,7 @@ function load_global($force_reload = false) {
         $media_tree = new Filesystem(ROOT_DIRECTORY, $filesystem_trees[SESSION_MEDIA], true);
         $media_tree->add($filesystem_trees['directories']);
         $media_tree->add($filesystem_trees[SESSION_MEDIA]);
+        $media_tree->remove_empty_nodes();
 
         $_SESSION[SESSION_PLAYLISTS] = serialize($playlist_tree);
         $_SESSION[SESSION_MEDIA] = serialize($media_tree);
