@@ -13,11 +13,12 @@
 
 
 --------------------------------------------------------------------------------
- version 0.1.0, xxxx-xx-xx
+ version 0.1.0, 2011-02-16
 --------------------------------------------------------------------------------
     * File config.php for easy setup
     * Tree view of playlists
     * Tree view of media files in given playlist
+    * List of playlist contents
     * Add new playlist
     * Delete existing playlists
     * Edit existing playlists
