@@ -39,14 +39,15 @@ div#footer {
 }
 
 .row-comment {
-    color: #393;
+    /*background-color: #f8f8f8;*/
+    color: #339933;
 }
 
 .row-valid {
-    /*background-color: #339;*/
+    /*background-color: #333399;*/
 }
 
 .row-invalid {
-    color: #933;
+    color: #993333;
     font-weight: bold;
 }

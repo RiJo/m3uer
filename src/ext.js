@@ -219,18 +219,60 @@ function render_playlist(root, playlist) {
                     msg += node.id;
                 });
                 Ext.Ajax.request({
-                    url: 'playlist.php?q=save&root='+root+'&path='+playlist,
-                    params: { data: Ext.encode(msg.split(',')) },
+                    url: 'data.php?q=playlist-invalid-count&root='+root+'&path='+playlist,
                     success: function(response, opts) {
                         var title = 'Playlist saved';
-                        Ext.Msg.show({
-                            title: title,
-                            msg: response.responseText,
-                            icon: Ext.Msg.INFO,
-                            minWidth: 200,
-                            buttons: Ext.Msg.OK
-                        });
-                        store.reload();
+                        var invalidItems = response.responseText;
+                        if (invalidItems == "0") {
+                            // No invalid items
+                            Ext.Ajax.request({
+                                url: 'playlist.php?q=save&root='+root+'&path='+playlist,
+                                params: { data: Ext.encode(msg.split(',')) },
+                                success: function(response, opts) {
+                                    Ext.Msg.show({
+                                        title: title,
+                                        msg: response.responseText,
+                                        icon: Ext.Msg.INFO,
+                                        minWidth: 200,
+                                        buttons: Ext.Msg.OK
+                                    });
+                                    store.reload();
+                                },
+                                failure: function(response, opts) {
+                                    alert("Could not save playlist: "+response.responseText);
+                                }
+                            });
+                        }
+                        else {
+                            // Invalid items on current playlist
+                            Ext.Msg.show({
+                                title: 'Confirm save playlist',
+                                msg: 'There are '+invalidItems+' invalid item(s) in the current playlist, are you sure you want to overwrite it?',
+                                buttons: Ext.Msg.YESNO,
+                                icon: Ext.MessageBox.QUESTION,
+                                fn: function(response) {
+                                    if (response == "yes") {
+                                        Ext.Ajax.request({
+                                            url: 'playlist.php?q=save&root='+root+'&path='+playlist,
+                                            params: { data: Ext.encode(msg.split(',')) },
+                                            success: function(response, opts) {
+                                                Ext.Msg.show({
+                                                    title: title,
+                                                    msg: response.responseText,
+                                                    icon: Ext.Msg.INFO,
+                                                    minWidth: 200,
+                                                    buttons: Ext.Msg.OK
+                                                });
+                                                store.reload();
+                                            },
+                                            failure: function(response, opts) {
+                                                alert("Could not save playlist: "+response.responseText);
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
                     },
                     failure: function(response, opts) {
                         alert("Could not save playlist: "+response.responseText);

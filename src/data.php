@@ -23,6 +23,9 @@ switch ($_GET['q']) {
     case 'playlist-contents':
         playlist_contents();
         break;
+    case 'playlist-invalid-count':
+        playlist_invalid_count();
+        break;
     case 'playlists':
         playlists();
         break;
@@ -63,6 +66,20 @@ function playlist_contents() {
         $result = load_playlist($root, $playlist, true);
 
         echo json_encode($result[KEY_CONTENTS]);
+    }
+}
+
+function playlist_invalid_count() {
+    if (isset($_GET['root']) && isset($_GET['path'])) {
+        $root = $_GET['root'];
+        $playlist = $_GET['path'];
+
+        if (!file_exists($playlist))
+            die("Could not locate playlist \"$playlist\"");
+
+        $result = load_playlist($root, $playlist, true);
+
+        echo count($result[KEY_INVALID]);
     }
 }
 
