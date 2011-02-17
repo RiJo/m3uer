@@ -3,6 +3,10 @@
 var currentNode = '';
 var restrictCascade = false;
 
+function basename(path) {
+    return path.replace(/\\/g,'/').replace( /.*\//, '' );
+}
+
 function render(root, playlist) {
     if (playlist == '')
         render_playlists(root);
@@ -314,7 +318,7 @@ function render_playlist(root, playlist) {
         collapsible: true,
         collapsed: true,
         layout: 'fit',
-        title: 'Playlist contents',
+        title: basename(playlist),
         items: dataView
     });
 }

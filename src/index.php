@@ -2,12 +2,12 @@
 
 /*
     TODO:
-    * Show playlist name in edit playlist page.
     * Create a filter for list of playlist contents (to only show invalid for instance)
     * Loading indication while loading filesystem (put load filesystem in an ajax script?)
     * Bug: check out of sync when double click on directory
     * Printout permissions of playlists?
     * Make screenshots
+    * Clean up ext.js (tons of redundant code :S)
 */
 
 require_once('config.php');
