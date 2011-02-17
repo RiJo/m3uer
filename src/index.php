@@ -3,9 +3,10 @@
 /*
     TODO:
     * Clean up ext.js (tons of redundant code :S)
-    * Create a filter for list of playlist contents (to only show invalid for instance)
-    * FR: Loading indication while loading filesystem (put load filesystem in an ajax script?)
     * Bug: check out of sync when double click on directory
+    * FR: Loading indication while loading filesystem (put load filesystem in an ajax script?)
+
+    * Create a filter for list of playlist contents (to only show invalid for instance)
     * FR: Printout permissions of playlists?
 */
 
