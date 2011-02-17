@@ -9,119 +9,100 @@ if (!isset($_GET['q']))
 
 switch ($_GET['q']) {
     case 'create':
-        create();
+        assure_keys($_GET, array('root', 'name', 'path'), 'Could not create playlist: Invalid aguments given');
+        create($_GET['root'], $_GET['path'], $_GET['name']);
         break;
     case 'delete':
-        delete();
+        assure_keys($_GET, array('root', 'path'), 'Could not delete playlist: Invalid aguments given');
+        delete($_GET['root'], $_GET['path']);
         break;
     case 'save':
-        save();
+        assure_keys($_GET, array('root', 'path'), 'Playlist could not be saved: Invalid aguments given');
+        assure_keys($_POST, 'data', 'Playlist could not be saved: Invalid aguments given');
+        save($_GET['root'], $_GET['path'], $_POST['data']);
         break;
     default:
         die("Unrecognized query $_GET[q]");
+}
+
+function assure_keys($array, $keys, $error_message = '') {
+    if (!is_array($keys))
+        $keys = array($keys);
+
+    foreach ($keys as $key)
+        if (!isset($array[$key]))
+            die($error_message);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 //   QUERIES   /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-function create() {
-    if (isset($_GET['root']) && isset($_GET['name']) && isset($_GET['path'])) {
-        $root = $_GET['root'];
-        $path = $_GET['path'];
-        $name = $_GET['name'];
+function create($root, $path, $name) {
+    $playlist_path = $path.DIRECTORY_SEPARATOR.$name;
+    $playlist_file_info = pathinfo($playlist_path);
 
-        $playlist_path = $path.DIRECTORY_SEPARATOR.$name;
-        $playlist_file_info = pathinfo($playlist_path);
+    $extension = isset($playlist_file_info['extension']) ? $playlist_file_info['extension'] : '';
+    if (!in_array($extension, explode(',', PLAYLIST_FORMATS)))
+        die('Could not create playlist: Invalid file extension');
 
-        //~ die("root: $root, path: $path, name: $name<br><pre>".print_r($playlist_file_info, true));
+    // Create file
+    @touch($playlist_path)
+        or die('Could not create playlist: Operation not permitted');
 
-        $extension = isset($playlist_file_info['extension']) ? $playlist_file_info['extension'] : '';
-        if (!in_array($extension, explode(',', PLAYLIST_FORMATS)))
-            die('Could not create playlist: Invalid file extension');
+    // Add new file to session
+    $playlists = unserialize($_SESSION[SESSION_PLAYLISTS]);
+    $relative_path = make_relative_path($root, $playlist_path, false);
+    $playlists->add($relative_path);
+    $_SESSION[SESSION_PLAYLISTS] = serialize($playlists);
 
-        // Create file
-        @touch($playlist_path)
-            or die('Could not create playlist: Operation not permitted');
-
-        // Add new file to session
-        $playlists = unserialize($_SESSION[SESSION_PLAYLISTS]);
-        $relative_path = make_relative_path($root, $playlist_path, false);
-        $playlists->add($relative_path);
-        $_SESSION[SESSION_PLAYLISTS] = serialize($playlists);
-
-        //~ die("<pre>".print_r(json_decode($playlists->to_json()), true)."</pre>");
-
-        echo 'Playlist created successfully';
-    }
-    else
-        die("Could not create playlist: Invalid aguments given");
+    echo 'Playlist created successfully';
 }
 
-function delete() {
-    if (isset($_GET['root']) && isset($_GET['path'])) {
-        $root = $_GET['root'];
-        $path = $_GET['path'];
+function delete($root, $path) {
+    $playlist_file_info = pathinfo($path);
 
-        $playlist_file_info = pathinfo($path);
+    if (!is_file($path))
+        die('Could not delete playlist: Not a file');
 
-        //~ die("root: $root, path: $path<br><pre>".print_r($playlist_file_info, true));
+    $extension = isset($playlist_file_info['extension']) ? $playlist_file_info['extension'] : '';
+    if (!in_array($extension, explode(',', PLAYLIST_FORMATS)))
+        die('Could not delete playlist: Invalid file extension');
 
-        if (!is_file($path))
-            die('Could not delete playlist: Not a file');
+    // Delete file
+    @unlink($path)
+        or die('Could not delete playlist: Operation not permitted');
 
-        $extension = isset($playlist_file_info['extension']) ? $playlist_file_info['extension'] : '';
-        if (!in_array($extension, explode(',', PLAYLIST_FORMATS)))
-            die('Could not delete playlist: Invalid file extension');
+    // Remove file from session
+    $playlists = unserialize($_SESSION[SESSION_PLAYLISTS]);
+    $relative_path = make_relative_path($root, $path, false);
+    $playlists->remove($relative_path);
+    $_SESSION[SESSION_PLAYLISTS] = serialize($playlists);
 
-        // Delete file
-        @unlink($path)
-            or die('Could not delete playlist: Operation not permitted');
-
-        // Remove file from session
-        $playlists = unserialize($_SESSION[SESSION_PLAYLISTS]);
-        $relative_path = make_relative_path($root, $path, false);
-        $playlists->remove($relative_path);
-        $_SESSION[SESSION_PLAYLISTS] = serialize($playlists);
-
-        //~ die("<pre>".print_r(json_decode($playlists->to_json()), true)."</pre>");
-
-        echo 'Playlist deleted successfully';
-    }
-    else
-        die('Could not delete playlist: Invalid aguments given');
+    echo 'Playlist deleted successfully';
 }
 
-function save() {
-    if (isset($_GET['root']) && isset($_GET['path']) && isset($_POST['data'])) {
-        $playlist_file_info = get_file_info($_GET['path']);
+function save($root, $path, $data) {
+    $playlist_file_info = get_file_info($path);
 
-        // Reference: http://stackoverflow.com/questions/689185/json-decode-returns-null-php
-        if (get_magic_quotes_gpc()) {
-            // Remove PHP magic quotes 
-            $data = stripslashes($_POST['data']);
-        }
-        else {
-            $data = $_POST['data'];
-        }
-        $data = json_decode($data, true);
-
-        if ($data == null)
-            die('Playlist could not be saved: Could not parse json data');
-
-        //~ die("<pre>".print_r($data, true)."</pre>");
-
-        $handle = @fopen($playlist_file_info['path'], 'w')
-            or die('Playlist could not be saved: Could not open file for writing');
-
-        fwrite($handle, playlist_header().LINE_BREAK);
-        fwrite($handle, implode("\n", playlist_contents($playlist_file_info['path'], $data)));
-        fclose($handle);
-
-        echo 'Playlist saved successfully';
+    // Reference: http://stackoverflow.com/questions/689185/json-decode-returns-null-php
+    if (get_magic_quotes_gpc()) {
+        // Remove PHP magic quotes 
+        $data = stripslashes($data);
     }
-    else
-        die('Playlist could not be saved: Invalid aguments given');
+    $data = json_decode($data, true);
+
+    if ($data == null)
+        die('Playlist could not be saved: Could not parse json data');
+
+    $handle = @fopen($playlist_file_info['path'], 'w')
+        or die('Playlist could not be saved: Could not open file for writing');
+
+    fwrite($handle, playlist_header().LINE_BREAK);
+    fwrite($handle, implode("\n", playlist_contents($playlist_file_info['path'], $data)));
+    fclose($handle);
+
+    echo 'Playlist saved successfully';
 }
 
 ////////////////////////////////////////////////////////////////////////////////
