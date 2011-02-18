@@ -97,6 +97,10 @@ function render_playlists(root) {
         ]
     });
 
+    /*
+     * Tree of playlists
+     */
+
     var tree = new Ext.tree.TreePanel({
         renderTo: 'tree',
         title: 'Playlists',
@@ -146,6 +150,36 @@ function render_playlists(root) {
 }
 
 function render_playlist(root, playlist) {
+    /*
+     * List with all contents of playlist
+     */
+
+    var store = new Ext.data.JsonStore({
+        url: 'data.php?q=playlist-contents&root='+root+'&path='+playlist,
+        fields: ['type', 'content']
+    });
+    store.load();
+
+    var dataView = new Ext.DataView({
+        multiSelect: false,
+        store: store,
+        emptyText: '<div class="row row-valid">(no media files)</div>',
+        tpl: '<tpl for="."><div class="row row-{type}">{content}</div></tpl>',
+    });
+
+    var panel = new Ext.Panel({
+        id: 'images-view',
+        renderTo: 'messages',
+        collapsible: true,
+        collapsed: true,
+        layout: 'fit',
+        title: basename(playlist),
+        items: dataView
+    });
+
+    /*
+     * Tree of playlist items
+     */
     var tree = new Ext.tree.TreePanel({
         renderTo: 'tree',
         //title: playlist,
@@ -289,36 +323,4 @@ function render_playlist(root, playlist) {
     var myTreeSorter = new Ext.tree.TreeSorter(tree, {
     });
     myTreeSorter.doSort(tree.getRootNode());
-
-    /*
-     * List with all contents of playlist
-     */
-
-    var store = new Ext.data.JsonStore({
-        url: 'data.php?q=playlist-contents&root='+root+'&path='+playlist,
-        //root: 'images',
-        fields: ['type', 'content']
-    });
-    store.load();
-
-    var dataView = new Ext.DataView({
-        multiSelect: false,
-        store: store,
-        emptyText: 'Empty playlist',
-        //reserveScrollOffset: true,
-        tpl: '<tpl for="."><div class="row row-{type}">{content}</div></tpl>',
-    });
-
-    // put it in a Panel so it looks pretty
-    var panel = new Ext.Panel({
-        id: 'images-view',
-        //width: 425,
-        //height: 250,
-        renderTo: 'messages',
-        collapsible: true,
-        collapsed: true,
-        layout: 'fit',
-        title: basename(playlist),
-        items: dataView
-    });
 }
