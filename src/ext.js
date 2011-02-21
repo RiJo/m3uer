@@ -200,6 +200,12 @@ function render_playlist(root, playlist) {
             'render': function() {
                 this.getRootNode().expand();
             },
+            'beforedblclick': function(node, e)  {
+                return false; // disable doubleclick
+            },
+            /*'click': function(node, e) {
+                node.ui.toggleCheck(!node.ui.isChecked());
+            },*/
             'checkchange': function(node, checked) {
                 // Cascade child nodes
                 if (!restrictCascade) {
