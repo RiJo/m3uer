@@ -7,6 +7,7 @@
 
     * Create a filter for list of playlist contents (to only show invalid for instance)
     * FR: Printout permissions of playlists?
+    * Bug: cannot save songs containing '&' in the filename to a playlist
 */
 
 require_once('config.php');

@@ -13,7 +13,7 @@ define('ROOT_DIRECTORY',            '/home/rijo/programming/github/m3uer/src');
 
 // Ext JS
 define('EXTJS_PATH',                '../ext');
-define('EXTJS_THEME',               'gray');
+define('EXTJS_THEME',               'blue');
 
 define('LINE_BREAK',                chr(10));
 define('COMMENT_SYMBOL',            '#');
