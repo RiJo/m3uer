@@ -47,11 +47,7 @@ echo "\n            </script>";
 
 echo "\n            <script type='text/javascript'>";
 echo "\n                Ext.Ajax.request({";
-echo "\n                    url: 'load_filesystem.php',";
-if ($reload)
-{
-echo "\n                    params: { reload: '1' },";
-}
+echo "\n                    url: 'load_filesystem.php".($reload ? "?reload=1" : "")."',";
 echo "\n                    success: function(response, opts) {";
 echo "\n                        //  Update table";
 echo "\n                        javascript:render('".ROOT_DIRECTORY."', '".((empty($_GET['playlist'])) ? '' : $_GET['playlist'])."');";
