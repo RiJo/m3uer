@@ -114,7 +114,7 @@ function render_playlists(root) {
         userArrows: true,
         animate: false,
         autoScroll: true,
-        //loadMask: true,
+        loadMask: true,
         loader: new Ext.tree.TreeLoader({
             dataUrl: 'data.php?q=playlists&root='+root
         }),
@@ -194,7 +194,7 @@ function render_playlist(root, playlist) {
         userArrows: true,
         animate: false,
         autoScroll: true,
-        //loadMask: true,
+        loadMask: true,
         loader: new Ext.tree.TreeLoader({
             dataUrl: 'data.php?q=playlist-tree&root='+root+'&path='+playlist
         }),
