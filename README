@@ -31,5 +31,6 @@
 --------------------------------------------------------------------------------
     * Coloring of different row types of playlist
     * Confirmation needed when overwriting playlist containing invalid items
+    * Asynchronous loading of filesystem with loading screen
     * Bugfix: double click on directory folder caused checking out-of-sync
 --------------------------------------------------------------------------------
