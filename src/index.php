@@ -15,7 +15,6 @@ require_once('file_handling.php');
 require_once('Filesystem.php');
 
 $reload = isset($_GET['reload']);
-load_global($reload);
 
 
 echo "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'\n'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>";
@@ -46,7 +45,7 @@ echo "\n            <div class='content' id='tree'></div>";
 echo "\n            <script type='text/javascript'>";
 echo "\n                 document.getElementById('loading-message').innerHTML = 'Loading filesystem...';";
 echo "\n            </script>";
-
+load_global($reload);
 
 // Load extjs components
 echo "\n            <script type='text/javascript'>";
