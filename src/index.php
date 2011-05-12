@@ -12,9 +12,6 @@
 
 require_once('config.php');
 
-$reload = isset($_GET['reload']);
-
-
 echo "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'\n'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>";
 echo "\n<html>";
 echo "\n    <head>";
@@ -47,7 +44,7 @@ echo "\n            </script>";
 
 echo "\n            <script type='text/javascript'>";
 echo "\n                Ext.Ajax.request({";
-echo "\n                    url: 'load_filesystem.php".($reload ? "?reload=1" : "")."',";
+echo "\n                    url: 'load_filesystem.php".(isset($_GET['reload']) ? "?reload=1" : "")."',";
 echo "\n                    success: function(response, opts) {";
 echo "\n                        //  Update table";
 echo "\n                        javascript:render('".ROOT_DIRECTORY."', '".((empty($_GET['playlist'])) ? '' : $_GET['playlist'])."');";
