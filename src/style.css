@@ -57,13 +57,9 @@ div#footer {
     font-weight: bold;
 }
 
-
-
-
-
-
-
-/* TEST LOADER */
+/* 
+ * Loading mask
+ */
 
 #loading-mask {
      position: absolute;
@@ -77,11 +73,11 @@ div#footer {
 #loading {
      position: absolute;
      top: 40%;
-     left: 45%;
+     left: 40%;
      z-index: 2;
 }
 #loading span {
      background: url('ajaxLoader.gif') no-repeat left center;
-     padding: 15px 20px;
+     padding: 15px 50px;
      display: block;
 }

@@ -11,8 +11,6 @@
 */
 
 require_once('config.php');
-require_once('file_handling.php');
-require_once('Filesystem.php');
 
 $reload = isset($_GET['reload']);
 
@@ -43,69 +41,52 @@ echo "\n            <div class='content' id='tree'></div>";
 
 // Load filesystem
 echo "\n            <script type='text/javascript'>";
-echo "\n                 document.getElementById('loading-message').innerHTML = 'Loading filesystem...';";
+echo "\n                document.getElementById('loading-message').innerHTML = 'Loading filesystem...';";
 echo "\n            </script>";
-load_global($reload);
+// TODO: load load_filesystem.php async..
+
+echo "\n            <script type='text/javascript'>";
+echo "\n                Ext.Ajax.request({";
+echo "\n                    url: 'load_filesystem.php',";
+if ($reload)
+{
+echo "\n                    params: { reload: '1' },";
+}
+echo "\n                    success: function(response, opts) {";
+echo "\n                        //  Update table";
+echo "\n                        javascript:render('".ROOT_DIRECTORY."', '".((empty($_GET['playlist'])) ? '' : $_GET['playlist'])."');";
+echo "\n                        //  Hide loading message";
+echo "\n                        var loadingMask = Ext.get('loading-mask');";
+echo "\n                        var loading = Ext.get('loading');";
+echo "\n                        loading.fadeOut({ duration: 0.2, remove: true });";
+echo "\n                        //  Hide loading mask";
+echo "\n                        loadingMask.setOpacity(0.9);";
+echo "\n                        loadingMask.shift({";
+echo "\n                            xy: loading.getXY(),";
+echo "\n                            width: loading.getWidth(),";
+echo "\n                            height: loading.getHeight(),";
+echo "\n                            remove: true,";
+echo "\n                            duration: 1,";
+echo "\n                            opacity: 0.1,";
+echo "\n                            easing: 'bounceOut'";
+echo "\n                        });";
+echo "\n                    },";
+echo "\n                    failure: function(response, opts) {";
+echo "\n                        alert('Could not load filesystem: '+response.responseText);";
+echo "\n                    }";
+echo "\n                })";
+echo "\n            </script>";
 
 // Load extjs components
-echo "\n            <script type='text/javascript'>";
-echo "\n                 document.getElementById('loading-message').innerHTML = 'Loading graphics...';";
-echo "\n            </script>";
-echo "\n            <script type='text/javascript'>";
-echo "\n                javascript:render('".ROOT_DIRECTORY."', '".((empty($_GET['playlist'])) ? '' : $_GET['playlist'])."');";
-echo "\n            </script>";
-
-// Fade out loader
-echo "\n            <script type='text/javascript'>";
-echo "\n            Ext.onReady(function(){";
-echo "\n                var loadingMask = Ext.get('loading-mask');";
-echo "\n                var loading = Ext.get('loading');";
-echo "\n                //  Hide loading message";
-echo "\n                loading.fadeOut({ duration: 0.2, remove: true });";
-echo "\n                //  Hide loading mask";
-echo "\n                loadingMask.setOpacity(0.9);";
-echo "\n                loadingMask.shift({";
-echo "\n                    xy: loading.getXY(),";
-echo "\n                    width: loading.getWidth(),";
-echo "\n                    height: loading.getHeight(),";
-echo "\n                    remove: true,";
-echo "\n                    duration: 1,";
-echo "\n                    opacity: 0.1,";
-echo "\n                    easing: 'bounceOut'";
-echo "\n                });";
-echo "\n            });";
-echo "\n            </script>";
+//~ echo "\n            <script type='text/javascript'>";
+//~ echo "\n                 document.getElementById('loading-message').innerHTML = 'Loading graphics...';";
+//~ echo "\n            </script>";
+//~ echo "\n            <script type='text/javascript'>";
+//~ echo "\n                ";
+//~ echo "\n            </script>";
 
 echo "\n        </div>";
 echo "\n    </body>";
 echo "\n</html>";
-
-
-function load_global($force_reload = false) {
-    if (!isset($_SESSION[SESSION_PLAYLISTS]) || !isset($_SESSION[SESSION_MEDIA]) || $force_reload) {
-        // Load filesystem
-        $extensions = array(
-            SESSION_PLAYLISTS => explode(',', PLAYLIST_FORMATS),
-            SESSION_MEDIA => explode(',', MEDIA_FORMATS),
-        );
-        $skip_patterns = (SKIP_FILE_PATTERNS == '') ? array() : explode(',', SKIP_FILE_PATTERNS);
-        $filesystem_trees = load_filesystem(ROOT_DIRECTORY, $extensions, $skip_patterns);
-
-        // Build playlists tree
-        $playlist_tree = new Filesystem(ROOT_DIRECTORY, false);
-        $playlist_tree->add($filesystem_trees['directories']);
-        $playlist_tree->add($filesystem_trees[SESSION_PLAYLISTS]);
-        $playlist_tree->expand($filesystem_trees[SESSION_PLAYLISTS]);
-
-        // Build media tree
-        $media_tree = new Filesystem(ROOT_DIRECTORY, $filesystem_trees[SESSION_MEDIA], true);
-        $media_tree->add($filesystem_trees['directories']);
-        $media_tree->add($filesystem_trees[SESSION_MEDIA]);
-        $media_tree->remove_empty_nodes();
-
-        $_SESSION[SESSION_PLAYLISTS] = serialize($playlist_tree);
-        $_SESSION[SESSION_MEDIA] = serialize($media_tree);
-    }
-}
 
 ?>
