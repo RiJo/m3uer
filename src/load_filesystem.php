@@ -1,5 +1,6 @@
 <?php
 
+require_once('config.php');
 require_once('file_handling.php');
 require_once('Filesystem.php');
 
