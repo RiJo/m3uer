@@ -12,6 +12,7 @@ define('ROOT_DIRECTORY', '/home/rijo/programming/github/m3uer/src');
 //define('ROOT_DIRECTORY', '/share/HDA_DATA/Qmultimedia/Musik');
 
 // Ext JS
+define('EXTJS_VERSION', '4');
 define('EXTJS_PATH', '../ext');
 define('EXTJS_THEME', 'blue');
 
