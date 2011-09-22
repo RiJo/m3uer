@@ -4,7 +4,6 @@ var currentNode = '';
 var restrictCascade = false;
 
 function render(reload, root, playlist) {
-{
     Ext.Ajax.request({
         url: 'load_filesystem.php'+(reload ? "?reload=1" : ""),
         success: function(response, opts) {

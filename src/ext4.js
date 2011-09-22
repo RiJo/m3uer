@@ -4,7 +4,6 @@ var currentNode = '';
 var restrictCascade = false;
 
 function render(reload, root, playlist) {
-{
     if (playlist == '')
         render_playlists(root);
     else
