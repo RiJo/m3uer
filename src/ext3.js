@@ -3,10 +3,10 @@
 var currentNode = '';
 var restrictCascade = false;
 
-function render(loader, root, playlist) {
+function render(reload, root, playlist) {
 {
     Ext.Ajax.request({
-        url: loader,
+        url: 'load_filesystem.php'+(reload ? "?reload=1" : ""),
         success: function(response, opts) {
             //  Update table
             if (playlist == '')
