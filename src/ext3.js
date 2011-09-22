@@ -32,7 +32,7 @@ function render(reload, root, playlist) {
         failure: function(response, opts) {
             alert('Could not load filesystem: '+response.responseText);
         }
-    })
+    });
 }
 
 function render_playlists(root) {
