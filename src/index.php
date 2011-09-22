@@ -27,10 +27,10 @@ echo "\n        <script type=\"text/javascript\" src=\"common.js\"></script>";
 echo "\n        <script type=\"text/javascript\" src=\"ext".EXTJS_VERSION.".js\"></script>";
 echo "\n    </head>";
 echo "\n    <body>";
-echo "\n        <div id='loading-mask'></div>";
-echo "\n        <div id='loading'>";
-echo "\n            <span id='loading-message'>n/a</span>";
-echo "\n        </div>";
+//~ echo "\n        <div id='loading-mask'></div>";
+//~ echo "\n        <div id='loading'>";
+//~ echo "\n            <span id='loading-message'>n/a</span>";
+//~ echo "\n        </div>";
 echo "\n        <div id='container'>";
 echo "\n            <div class='content' id='header'>".APPLICATION_NAME." v.".APPLICATION_VERSION."</div>";
 echo "\n            <div class='content' id='messages'></div>";
@@ -38,9 +38,9 @@ echo "\n            <div class='content' id='tree'></div>";
 //echo "\n            <div class='content' id='footer'><a href=\"unit_tests.php\">Unit tests</a></div>";
 
 // Load filesystem
-echo "\n            <script type='text/javascript'>";
-echo "\n                document.getElementById('loading-message').innerHTML = 'Loading filesystem...';";
-echo "\n            </script>";
+//~ echo "\n            <script type='text/javascript'>";
+//~ echo "\n                document.getElementById('loading-message').innerHTML = 'Loading filesystem...';";
+//~ echo "\n            </script>";
 
 // Start rendering
 echo "\n            <script type='text/javascript'>";
