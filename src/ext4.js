@@ -3,16 +3,8 @@
 var currentNode = '';
 var restrictCascade = false;
 
-//~ var myMask = new Ext.LoadMask(Ext.getBody(), {msg: "Loading..."});
-//~ Ext.Ajax.on('beforerequest', myMask.show, myMask);
-//~ Ext.Ajax.on('requestcomplete', myMask.hide, myMask);
-//~ Ext.Ajax.on('requestexception', myMask.hide, myMask);
-
-function basename(path) {
-    return path.replace(/\\/g,'/').replace( /.*\//, '' );
-}
-
 function render(root, playlist) {
+{
     if (playlist == '')
         render_playlists(root);
     else

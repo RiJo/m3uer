@@ -3,20 +3,36 @@
 var currentNode = '';
 var restrictCascade = false;
 
-//~ var myMask = new Ext.LoadMask(Ext.getBody(), {msg: "Loading..."});
-//~ Ext.Ajax.on('beforerequest', myMask.show, myMask);
-//~ Ext.Ajax.on('requestcomplete', myMask.hide, myMask);
-//~ Ext.Ajax.on('requestexception', myMask.hide, myMask);
-
-function basename(path) {
-    return path.replace(/\\/g,'/').replace( /.*\//, '' );
-}
-
 function render(root, playlist) {
-    if (playlist == '')
-        render_playlists(root);
-    else
-        render_playlist(root, playlist);
+{
+    Ext.Ajax.request({
+        url: '".target."',
+        success: function(response, opts) {
+            //  Update table
+            if (playlist == '')
+                render_playlists(root);
+            else
+                render_playlist(root, playlist);
+            //  Hide loading message
+            var loadingMask = Ext.get('loading-mask');
+            var loading = Ext.get('loading');
+            loading.fadeOut({ duration: 0.2, remove: true });
+            //  Hide loading mask"
+            loadingMask.setOpacity(0.9);
+            loadingMask.shift({
+                xy: loading.getXY(),
+                width: loading.getWidth(),
+                height: loading.getHeight(),
+                remove: true,
+                duration: 1,
+                opacity: 0.1,
+                easing: 'bounceOut'
+            });
+        },
+        failure: function(response, opts) {
+            alert('Could not load filesystem: '+response.responseText);
+        }
+    })
 }
 
 function render_playlists(root) {
