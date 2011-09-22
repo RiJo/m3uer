@@ -29,7 +29,7 @@ echo "\n    </head>";
 echo "\n    <body>";
 echo "\n        <div id='loading-mask'></div>";
 echo "\n        <div id='loading'>";
-echo "\n            <span id='loading-message'>Loading...</span>";
+echo "\n            <span id='loading-message'>n/a</span>";
 echo "\n        </div>";
 echo "\n        <div id='container'>";
 echo "\n            <div class='content' id='header'>".APPLICATION_NAME." v.".APPLICATION_VERSION."</div>";
@@ -44,7 +44,7 @@ echo "\n            </script>";
 
 // Start rendering
 echo "\n            <script type='text/javascript'>";
-echo "\n                javascript:render(".(isset($_GET['reload']) ? "true" : "false").", '".ROOT_DIRECTORY."', '".((empty($_GET['playlist'])) ? '' : $_GET['playlist'])."');";
+echo "\n                render(".(isset($_GET['reload']) ? "true" : "false").", '".ROOT_DIRECTORY."', '".((empty($_GET['playlist'])) ? '' : $_GET['playlist'])."');";
 echo "\n            </script>";
 
 echo "\n        </div>";
