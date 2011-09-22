@@ -44,7 +44,7 @@ echo "\n            <div class='content' id='tree'></div>";
 
 // Start rendering
 echo "\n            <script type='text/javascript'>";
-echo "\n                javascript:render('".ROOT_DIRECTORY."', '".((empty($_GET['playlist'])) ? '' : $_GET['playlist'])."');";
+echo "\n                javascript:render('load_filesystem.php".(isset($_GET['reload']) ? "?reload=1" : "")."', '".ROOT_DIRECTORY."', '".((empty($_GET['playlist'])) ? '' : $_GET['playlist'])."');";
 echo "\n            </script>";
 
 echo "\n        </div>";

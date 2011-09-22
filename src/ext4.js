@@ -3,7 +3,7 @@
 var currentNode = '';
 var restrictCascade = false;
 
-function render(root, playlist) {
+function render(loader, root, playlist) {
 {
     if (playlist == '')
         render_playlists(root);

@@ -1,6 +1,6 @@
 
 // Forward declaration
-function render(root, playlist);
+function render(loader, root, playlist);
 
 /*
  * Returns the basename ofthe given path.
