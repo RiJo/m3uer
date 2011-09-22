@@ -18,8 +18,16 @@ echo "\n    <head>";
 echo "\n        <title>".APPLICATION_NAME." v.".APPLICATION_VERSION."</title>";
 echo "\n        <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />";
 echo "\n        <meta http-equiv='Content-Language' content='en' />";
-echo "\n        <link rel=\"stylesheet\" type=\"text/css\" href=\"".EXTJS_PATH."/resources/css/ext-all-notheme.css\">";
-echo "\n        <link rel=\"stylesheet\" type=\"text/css\" title=\"access\" href=\"".EXTJS_PATH."/resources/css/xtheme-".EXTJS_THEME.".css\" />";
+if (EXTJS_VERSION == '3')
+{
+    echo "\n        <link rel=\"stylesheet\" type=\"text/css\" href=\"".EXTJS_PATH."/resources/css/ext-all-notheme.css\">";
+    echo "\n        <link rel=\"stylesheet\" type=\"text/css\" title=\"access\" href=\"".EXTJS_PATH."/resources/css/xtheme-".EXTJS_THEME.".css\" />";
+}
+else
+{
+    echo "\n        <link rel=\"stylesheet\" type=\"text/css\" href=\"".EXTJS_PATH."/resources/css/ext-all.css\">";
+    // TODO: apply theme css
+}
 echo "\n        <link rel='stylesheet' href='./style.css' type='text/css' />";
 echo "\n        <script type=\"text/javascript\" src=\"".EXTJS_PATH."/adapter/ext/ext-base.js\"></script>";
 echo "\n        <script type=\"text/javascript\" src=\"".EXTJS_PATH."/ext-all-debug.js\"></script>";
