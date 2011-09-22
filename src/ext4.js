@@ -6,7 +6,7 @@ var restrictCascade = false;
 function render(reload, root, playlist) {
     new Ext.data.proxy.Ajax({
         url: 'load_filesystem.php'+(reload ? '?reload=1' : ''),
-        afterRequest: function(Ext.data.Request request, Boolean success) {
+        afterRequest: function(request, success) {
             if (success) {
                 //  Update table
                 if (playlist == '')
