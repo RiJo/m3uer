@@ -4,32 +4,34 @@ var currentNode = '';
 var restrictCascade = false;
 
 function render(reload, root, playlist) {
-    Ext.Ajax.request({
+    new Ext.data.proxy.Ajax({
         url: 'load_filesystem.php'+(reload ? '?reload=1' : ''),
-        success: function(response, opts) {
-            //  Update table
-            if (playlist == '')
-                render_playlists(root);
-            else
-                render_playlist(root, playlist);
-            //  Hide loading message
-            var loadingMask = Ext.get('loading-mask');
-            var loading = Ext.get('loading');
-            loading.fadeOut({ duration: 0.2, remove: true });
-            //  Hide loading mask"
-            loadingMask.setOpacity(0.9);
-            loadingMask.shift({
-                xy: loading.getXY(),
-                width: loading.getWidth(),
-                height: loading.getHeight(),
-                remove: true,
-                duration: 1,
-                opacity: 0.1,
-                easing: 'bounceOut'
-            });
-        },
-        failure: function(response, opts) {
-            alert('Could not load filesystem: '+response.responseText);
+        afterRequest: function(Ext.data.Request request, Boolean success) {
+            if (success) {
+                //  Update table
+                if (playlist == '')
+                    render_playlists(root);
+                else
+                    render_playlist(root, playlist);
+                //  Hide loading message
+                var loadingMask = Ext.get('loading-mask');
+                var loading = Ext.get('loading');
+                loading.fadeOut({ duration: 0.2, remove: true });
+                //  Hide loading mask"
+                loadingMask.setOpacity(0.9);
+                loadingMask.shift({
+                    xy: loading.getXY(),
+                    width: loading.getWidth(),
+                    height: loading.getHeight(),
+                    remove: true,
+                    duration: 1,
+                    opacity: 0.1,
+                    easing: 'bounceOut'
+                });
+            }
+            else {
+                alert('Could not load filesystem: '+response.responseText);
+            }
         }
     });
 }
